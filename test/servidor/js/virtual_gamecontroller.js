@@ -30,8 +30,6 @@ var players=[];
 
 
 
-
-
 function preload() {
     //spritesheet for animations
     game.load.spritesheet('mario', 'assets/misc/mariospritesheet-small.png',50,50); // key, sourcefile, framesize x, framesize y
@@ -140,13 +138,13 @@ function create() {
     buttondown.events.onInputUp.add(function(){duck=false;});
     }
     else {
-        fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        fireButton = game.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
         game.input.keyboard.addKeyCapture([
             Phaser.Keyboard.LEFT,
             Phaser.Keyboard.RIGHT,
             Phaser.Keyboard.UP,
             Phaser.Keyboard.DOWN,
-            Phaser.Keyboard.SPACEBAR
+            Phaser.Keyboard.CONTROL
         ]);
         cursors = game.input.keyboard.createCursorKeys();
     }
@@ -217,8 +215,8 @@ function update() {
 };
 
 function render(){
-    game.debug.cameraInfo(game.camera, 500, 32);
-    game.debug.spriteCoords(player, 32, 32);
+    //game.debug.cameraInfo(game.camera, 500, 32);
+    //game.debug.spriteCoords(player, 32, 32);
 
     //game.debug.text('jump:' + jump + ' duck:' + duck + ' left:' + left + ' right:' + right + ' fire:' + fire, 20, 20);
     //game.debug.text('x:' + player.x+ ' y:' + player.y,20,40);
@@ -260,6 +258,10 @@ function fire_now() {
 function enableSockets(){
     socket=io.connect();
 
+    // Iniciamos el juego.
+    socket.emit('boton jugar','');
+
+
     // recibimos nuestra id.
     socket.on('me', function(n, tipo, playerx, playery) {
         me = n;
@@ -300,5 +302,16 @@ function enableSockets(){
             this.update();
 
         }
+    });
+
+    // Módulo del chat
+    socket.on('chat message', function(msg){
+        console.log(msg);
+        $('#messages').append($('<li>').text(msg));
+
+    });
+    socket.on('chat message broadcast', function(msg){
+        console.log(msg);
+        $('#messages').append($('<li>').text(msg));
     });
 }
