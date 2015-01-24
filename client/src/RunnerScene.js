@@ -13,15 +13,19 @@ var RunnerScene = (function(_super) {
     function RunnerScene(difficulty) {
         _super.call(this, difficulty);
         this.difficulty = difficulty;
-        
+
         // Establece los fondos del juego
         this.background = [
-            { speed: 1, image: 'background_back'},
-            { speed: 2, image: 'background_mid'}
+            {speed: 0.1, image: 'background_back'},
+            {speed: 0.5, image: 'background_mid'}
         ];
-        
+
+        // Definicion de objetos
+        this.item = ['trunk'];
+
         // Velocidad
         this.speed = Game.SPEED;
+        this.itemsInScene = [];
     }
     /**
      * Precarga de la escena
@@ -30,28 +34,33 @@ var RunnerScene = (function(_super) {
         this.runner = new Runner(this);
 
         // Carga los background
-        for(var i in this.background ){
-            this.load.image( this.background[i].image, 'assets/scene/' + this.background[i].image + '.png');
+        for (var i in this.background) {
+            this.load.image(this.background[i].image, 'assets/scene/' + this.background[i].image + '.png');
         }
-        
+
+        // Pre carga objetos
+        for (var i in this.item) {
+            this.load.spritesheet(this.item[i], 'assets/item/' + this.item[i] + '.png', 50, 100);
+        }
+
         this.stage.disableVisibilityChange = true;
         this.stage.disablePauseScreen = true;
     };
-    
+
     /**
      * Crea la escena
      */
     RunnerScene.prototype.create = function() {
-        
-        this.world.setBounds( -50, 0, Game.SIZE.width+50, Game.SIZE.height-100);
+
+        this.world.setBounds(-50, 0, Game.SIZE.width + 50, Game.SIZE.height - 100);
         this.physics.startSystem(Phaser.Physics.ARCADE);
-        this.physics.arcade.gravity.y = 980*Game.GRAVITY;
-        
+        this.physics.arcade.gravity.y = 980 * Game.GRAVITY;
+
         // Add background
-        for(var i in this.background){
+        for (var i in this.background) {
             this.background[i].sprite = this.add.tileSprite(0, 0, Game.SIZE.width, Game.SIZE.height, this.background[i].image);
         }
-        
+
         this.runner.create();
     };
     /**
@@ -60,15 +69,47 @@ var RunnerScene = (function(_super) {
     RunnerScene.prototype.update = function() {
 
         this.runner.update();
-        
+
+        if (!this.created) {
+            this.addItem(new Trunk(this));
+            this.addItem(new Trunk(this));
+            this.created = true;
+        }
+
+        // Por cada elemento de la lista
+        for (var i in this.itemsInScene) {
+            this.itemsInScene[i].update();
+        }
+
         // Mueve los fondos
-        for(var i in this.background){
+        for (var i in this.background) {
             this.background[i].sprite.tilePosition.x -= this.speed * this.background[i].speed;
         }
 
     };
+
+    /**
+     * Renderiza
+     */
     RunnerScene.prototype.render = function() {
 
+        if (Game.DEBUG) {
+            this.game.debug.body(this.runner.sprite);
+            this.game.debug.spriteCoords(this.runner.sprite, 32, 32);
+
+            for (var i in this.itemsInScene) {
+                this.game.debug.body(this.itemsInScene[i].sprite);
+                this.game.debug.spriteCoords(this.itemsInScene[i].sprite, 500, 32+i*50);
+            }
+        }
+    };
+
+    /**
+     * Pone un obstaculo
+     * @param Item item
+     */
+    RunnerScene.prototype.addItem = function(item) {
+        this.itemsInScene.push(item);
     };
     return RunnerScene;
 })(LevelScene);

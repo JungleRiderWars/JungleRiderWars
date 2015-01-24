@@ -1,7 +1,7 @@
 /**
  * Representa al jugador
  * 
- * @extend Scene
+ * @extend Player
  * @author Pedro <pedro.gamez@talitasia.com>
  */
 var Runner = (function(_super) {
@@ -17,6 +17,8 @@ var Runner = (function(_super) {
         this.isJumping = false;
         this.inGround = true;
         this.velocity = 0;
+        this.isGround = true;
+        this.nextJump = 0;
     }
 
     /**
@@ -25,7 +27,8 @@ var Runner = (function(_super) {
     Runner.prototype.create = function() {
         this.sprite = this.scene.add.sprite(this.scene.world.width / 2 - 25, Game.INITIAL_HEIGHT, 'runner');
         this.scene.physics.enable(this.sprite, Phaser.Physics.ARCADE);
-//        this.sprite.body.setSize(220, 10, 0, 0);
+
+        this.sprite.body.setSize(25, 50, 12, 0);
         this.sprite.body.collideWorldBounds = true;
         this.addAnimations();
 
@@ -58,13 +61,18 @@ var Runner = (function(_super) {
      */
     Runner.prototype.update = function() {
 
-        this.scene.speed = Game.SPEED + this.velocity/50;
+        if( this.sprite.body.x < 25 ){
+            console.log('Game over');
+            this.sprite.body.x = 150;
+        }
+        
+        this.scene.speed = Game.SPEED + this.velocity*2;
         
         if (!this.inGround && this.sprite.x === Game.INITIAL_HEIGHT) {
             this.inGround = true;
         }
 
-        if (this.isJumping) {
+        if (this.isJumping && this.scene.time.now < this.nextJump) {
             this.sprite.loadTexture('runner', 5);
             this.sprite.body.velocity.y = -400;
         }
@@ -72,14 +80,17 @@ var Runner = (function(_super) {
         else if (this.isStay)
             this.sprite.loadTexture('runner', 0);
 
-        else if (this.speed < 0)
+        else if (this.velocity < 0)
             this.sprite.animations.play('walk');
 
-        else if (this.speed > 0)
+        else if (this.velocity > 0)
             this.sprite.animations.play('sprint');
 
         else
             this.sprite.animations.play('running');
+        
+        if( this.sprite.y === 390 /*Game.INITIAL_HEIGHT*/)
+            this.isGround = true;
 
         this.sprite.body.velocity.x = this.velocity*100;
 
@@ -89,8 +100,11 @@ var Runner = (function(_super) {
      * Evento al presionar espacio
      */
     Runner.prototype.onDownSpace = function() {
-        if (!this.isJumping)
+        if (!this.isJumping && this.canJump() && this.scene.time.now > this.nextJump){
+            this.isGround = false;
             this.isJumping = true;
+            this.nextJump = this.scene.time.now + 100;
+        }
     };
 
     /**
@@ -126,6 +140,16 @@ var Runner = (function(_super) {
      */
     Runner.prototype.onUpRight = function() {
        this.velocity = 0;
+    };
+    
+    /**
+     * Comprueba si puede saltar
+     * @return bool
+     */
+    Runner.prototype.canJump = function(){
+        if( !this.isGround )
+            return false;
+        return true;
     };
 
     return Runner;

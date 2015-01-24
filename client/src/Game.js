@@ -25,9 +25,9 @@ var Game = {
     SPEED: 10,
     
     /**
-     * Tamaño del juego
+     * Tamaño del juego y de los cuadrados
      */
-    SIZE: { width: 1920/2, height: 1080/2 },
+    SIZE: { width: 1920/2, height: 1080/2, square: 50 },
     
     /**
      * Gravedad
