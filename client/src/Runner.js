@@ -49,11 +49,12 @@ var Runner = (function(_super) {
      * Añade las animaciones a la escena
      */
     Runner.prototype.addAnimations = function() {
+        this.sprite.animations.add('idle', [0], 10, true);
         this.sprite.animations.add('walk', [1, 2, 3, 4], 5, true);  // (key, framesarray, fps,repeat)
         this.sprite.animations.add('running', [1, 2, 3, 4], 10, true);
         this.sprite.animations.add('sprint', [1, 2, 3, 4], 15, true);
-        this.sprite.animations.add('duck', [11], 0, true);
-        this.sprite.animations.add('duckwalk', [10, 11, 12], 3, true);
+        this.sprite.animations.add('rolling', [5, 6, 7, 8], 10, true);
+        this.sprite.animations.add('jump', [9], 10, true);
     };
     /**
      * Hace las actualizaciones del personaje
@@ -68,7 +69,7 @@ var Runner = (function(_super) {
         }
 
         if (this.isJumping && this.scene.time.now < this.nextJump) {
-            this.sprite.loadTexture('runner', 5);
+            this.sprite.animations.play('jump');
             this.sprite.body.velocity.y = -400;
         }
 
