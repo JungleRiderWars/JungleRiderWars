@@ -8,25 +8,44 @@ var Runner = (function(_super) {
     __extends(Runner, _super);
     /**
      * Inicia al corredor
-     * @param Phaser.Sprite sprite
+     * @param Scene scene
      */
-    function Runner(sprite) {
+    function Runner(scene) {
         _super.call(this);
-        this.sprite = sprite;
-
-        //this.sprite.body.setCircle(22);  // collision circle 
-        //this.sprite.body.fixedRotation = true; // do not rotate on collision
-        //this.sprite.body.mass = 4;
-
-        this.addAnimations();
+        this.scene = scene;
+        scene.load.spritesheet('runner', 'assets/runner.png', 50, 50);
         this.isJumping = false;
         this.inGround = true;
+        this.velocity = 0;
     }
+
+    /**
+     * Crea el corredor
+     */
+    Runner.prototype.create = function() {
+        this.sprite = this.scene.add.sprite(this.scene.world.width / 2 - 25, Game.INITIAL_HEIGHT, 'runner');
+        this.scene.physics.enable(this.sprite, Phaser.Physics.ARCADE);
+//        this.sprite.body.setSize(220, 10, 0, 0);
+        this.sprite.body.collideWorldBounds = true;
+        this.addAnimations();
+
+        // Keyboard
+        this.scene.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT]);
+        var space = this.scene.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        space.onDown.add(this.onDownSpace, this);
+        space.onUp.add(this.onUpSpace, this);
+        var left = this.scene.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+        left.onDown.add(this.onDownLeft, this);
+        left.onUp.add(this.onUpLeft, this);
+        var right = this.scene.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        right.onDown.add(this.onDownRight, this);
+        right.onUp.add(this.onUpRight, this);
+
+    };
     /**
      * Añade las animaciones a la escena
      */
     Runner.prototype.addAnimations = function() {
-        // add some animations
         this.sprite.animations.add('walk', [1, 2, 3, 4], 5, true);  // (key, framesarray, fps,repeat)
         this.sprite.animations.add('running', [1, 2, 3, 4], 10, true);
         this.sprite.animations.add('sprint', [1, 2, 3, 4], 15, true);
@@ -37,38 +56,76 @@ var Runner = (function(_super) {
      * Hace las actualizaciones del personaje
      * @param number velocity
      */
-    Runner.prototype.update = function(velocity) {
+    Runner.prototype.update = function() {
 
-        if( !this.inGround && this.sprite.x === Game.INITIAL_HEIGHT ){
+        this.scene.speed = Game.SPEED + this.velocity/50;
+        
+        if (!this.inGround && this.sprite.x === Game.INITIAL_HEIGHT) {
             this.inGround = true;
         }
 
         if (this.isJumping) {
             this.sprite.loadTexture('runner', 5);
-            this.sprite.body.velocity.y = -velocity * 5;
+            this.sprite.body.velocity.y = -400;
         }
-        
-        else if (!velocity)
+
+        else if (this.isStay)
             this.sprite.loadTexture('runner', 0);
 
-        else if (velocity < Game.SPEED)
+        else if (this.speed < 0)
             this.sprite.animations.play('walk');
 
-        else if (velocity > Game.SPEED)
+        else if (this.speed > 0)
             this.sprite.animations.play('sprint');
 
         else
             this.sprite.animations.play('running');
 
+        this.sprite.body.velocity.x = this.velocity*100;
 
     };
 
     /**
-     * Hace saltar al personaje
+     * Evento al presionar espacio
      */
-    Runner.prototype.jump = function() {
+    Runner.prototype.onDownSpace = function() {
         if (!this.isJumping)
             this.isJumping = true;
+    };
+
+    /**
+     * Evento al soltar espacio
+     */
+    Runner.prototype.onUpSpace = function() {
+        this.isJumping = false;
+    };
+
+    /**
+     * Evento al presionar izquierda
+     */
+    Runner.prototype.onDownLeft = function() {
+        this.velocity = -2;
+    };
+
+    /**
+     * Evento al soltar izquierda
+     */
+    Runner.prototype.onUpLeft = function() {
+        this.velocity = 0;
+    };
+
+    /**
+     * Evento al presionar derecha
+     */
+    Runner.prototype.onDownRight = function() {
+       this.velocity = 2;
+    };
+
+    /**
+     * Evento al soltar derecha
+     */
+    Runner.prototype.onUpRight = function() {
+       this.velocity = 0;
     };
 
     return Runner;

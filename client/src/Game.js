@@ -27,13 +27,13 @@ var Game = {
     /**
      * Tamaño del juego
      */
-    SIZE: { width: 1920/3, height: 1080/3 },
+    SIZE: { width: 1920/2, height: 1080/2 },
     
     /**
      * Gravedad
      * @vars number
      */
-    GRAVITY: 1,
+    GRAVITY: 1.5,
     
     /**
      * Altura inicial

@@ -6,56 +6,65 @@
  */
 var RunnerScene = (function(_super) {
     __extends(RunnerScene, _super);
+    /**
+     * Inicia una escena de correr
+     * @param int difficulty
+     */
     function RunnerScene(difficulty) {
         _super.call(this, difficulty);
         this.difficulty = difficulty;
+        
+        // Establece los fondos del juego
+        this.background = [
+            { speed: 1, image: 'background_back'},
+            { speed: 2, image: 'background_mid'}
+        ];
+        
+        // Velocidad
+        this.speed = Game.SPEED;
     }
     /**
      * Precarga de la escena
      */
     RunnerScene.prototype.preload = function() {
-        this.load.spritesheet('runner', 'assets/runner.png', 50, 50);
-        this.load.image('background_back', 'assets/scene/background_back.png');
-        this.load.image('background_mid', 'assets/scene/background_mid.png');
+        this.runner = new Runner(this);
+
+        // Carga los background
+        for(var i in this.background ){
+            this.load.image( this.background[i].image, 'assets/scene/' + this.background[i].image + '.png');
+        }
+        
+        this.stage.disableVisibilityChange = true;
+        this.stage.disablePauseScreen = true;
     };
     
     /**
      * Crea la escena
      */
     RunnerScene.prototype.create = function() {
+        
+        this.world.setBounds( -50, 0, Game.SIZE.width+50, Game.SIZE.height-100);
         this.physics.startSystem(Phaser.Physics.ARCADE);
-
-        this.background_back = this.add.tileSprite(0, 0, Game.SIZE.width, Game.SIZE.height, 'background_back');
-        this.background_mid = this.add.tileSprite(0, 0, Game.SIZE.width, Game.SIZE.height, 'background_mid');
+        this.physics.arcade.gravity.y = 980*Game.GRAVITY;
         
-        // setup runner XXX: La anchura de la imágen debería tomarla
-        this.runner = new Runner(this.add.sprite(this.world.width/2-25, Game.INITIAL_HEIGHT, 'runner')); //create and position player
-        this.physics.enable(this.runner.sprite, Phaser.Physics.ARCADE);
-        this.runner.sprite.body.setSize(220, 10, 0, 0);
+        // Add background
+        for(var i in this.background){
+            this.background[i].sprite = this.add.tileSprite(0, 0, Game.SIZE.width, Game.SIZE.height, this.background[i].image);
+        }
         
-        // keyboard
-        this.controls = this.input.keyboard.createCursorKeys();
-        this.controls.space = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        this.runner.create();
     };
     /**
      * Se ejecuta en cada frame
      */
     RunnerScene.prototype.update = function() {
 
-        var velocity = Game.SPEED;
-
-        if (this.controls.left.isDown)
-            velocity -= 5;
-
-        if (this.controls.right.isDown)
-            velocity += 5;
-
-        if (this.controls.space.isDown )
-            this.runner.jump();
-
-        this.runner.update(velocity);
-        this.background_back.tilePosition.x -= velocity;
-        this.background_mid.tilePosition.x -= velocity - 2;
+        this.runner.update();
+        
+        // Mueve los fondos
+        for(var i in this.background){
+            this.background[i].sprite.tilePosition.x -= this.speed * this.background[i].speed;
+        }
 
     };
     RunnerScene.prototype.render = function() {
