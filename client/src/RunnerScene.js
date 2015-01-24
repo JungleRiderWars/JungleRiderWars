@@ -42,9 +42,17 @@ var RunnerScene = (function(_super) {
         for (var i in this.item) {
             this.load.spritesheet(this.item[i], 'assets/item/' + this.item[i] + '.png', 50, 100);
         }
-
+        
         this.stage.disableVisibilityChange = true;
         this.stage.disablePauseScreen = true;
+        
+        this.input.onDown.add(function() {
+            console.log(this.time.now, Trunk.nextUse);
+            if (this.time.now > Trunk.nextUse) {
+                this.addItem(new Trunk(this));
+                Trunk.nextUse = this.time.now + Trunk.DELAY*1000;
+            }
+        }, this);
     };
 
     /**
@@ -60,6 +68,12 @@ var RunnerScene = (function(_super) {
         for (var i in this.background) {
             this.background[i].sprite = this.add.tileSprite(0, 0, Game.SIZE.width, Game.SIZE.height, this.background[i].image);
         }
+        
+        this.exit = this.add.sprite(-50, Game.INITIAL_HEIGHT);
+        this.physics.enable(this.exit, Phaser.Physics.ARCADE);
+        this.exit.body.setSize(50, Game.SIZE.height, 0, 0);
+        this.exit.body.collideWorldBounds = true;
+        this.exit.body.immovable = true;
 
         this.runner.create();
     };
@@ -70,16 +84,12 @@ var RunnerScene = (function(_super) {
 
         this.runner.update();
 
-        if (!this.created) {
-            this.addItem(new Trunk(this));
-            this.addItem(new Trunk(this));
-            this.created = true;
-        }
-
         // Por cada elemento de la lista
         for (var i in this.itemsInScene) {
             this.itemsInScene[i].update();
         }
+        
+        this.physics.arcade.collide(this.runner.sprite, this.exit, this.runner.gameOver, null, this.runner);
 
         // Mueve los fondos
         for (var i in this.background) {
@@ -96,10 +106,11 @@ var RunnerScene = (function(_super) {
         if (Game.DEBUG) {
             this.game.debug.body(this.runner.sprite);
             this.game.debug.spriteCoords(this.runner.sprite, 32, 32);
+            this.game.debug.body(this.exit);
 
             for (var i in this.itemsInScene) {
                 this.game.debug.body(this.itemsInScene[i].sprite);
-                this.game.debug.spriteCoords(this.itemsInScene[i].sprite, 500, 32+i*50);
+                this.game.debug.spriteCoords(this.itemsInScene[i].sprite, 500, 32 + i * 50);
             }
         }
     };

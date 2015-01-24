@@ -61,13 +61,8 @@ var Runner = (function(_super) {
      */
     Runner.prototype.update = function() {
 
-        if( this.sprite.body.x < 25 ){
-            console.log('Game over');
-            this.sprite.body.x = 150;
-        }
-        
-        this.scene.speed = Game.SPEED + this.velocity*2;
-        
+        this.scene.speed = Game.SPEED + this.velocity * 2;
+
         if (!this.inGround && this.sprite.x === Game.INITIAL_HEIGHT) {
             this.inGround = true;
         }
@@ -88,11 +83,11 @@ var Runner = (function(_super) {
 
         else
             this.sprite.animations.play('running');
-        
-        if( this.sprite.y === 390 /*Game.INITIAL_HEIGHT*/)
+
+        if (this.sprite.y === 390 /*Game.INITIAL_HEIGHT*/)
             this.isGround = true;
 
-        this.sprite.body.velocity.x = this.velocity*100;
+        this.sprite.body.velocity.x = this.velocity * 100;
 
     };
 
@@ -100,7 +95,7 @@ var Runner = (function(_super) {
      * Evento al presionar espacio
      */
     Runner.prototype.onDownSpace = function() {
-        if (!this.isJumping && this.canJump() && this.scene.time.now > this.nextJump){
+        if (!this.isJumping && this.canJump() && this.scene.time.now > this.nextJump) {
             this.isGround = false;
             this.isJumping = true;
             this.nextJump = this.scene.time.now + 100;
@@ -132,25 +127,32 @@ var Runner = (function(_super) {
      * Evento al presionar derecha
      */
     Runner.prototype.onDownRight = function() {
-       this.velocity = 2;
+        this.velocity = 2;
     };
 
     /**
      * Evento al soltar derecha
      */
     Runner.prototype.onUpRight = function() {
-       this.velocity = 0;
+        this.velocity = 0;
     };
-    
+
     /**
      * Comprueba si puede saltar
      * @return bool
      */
-    Runner.prototype.canJump = function(){
-        if( !this.isGround )
+    Runner.prototype.canJump = function() {
+        if (!this.isGround)
             return false;
         return true;
     };
 
+    /**
+     * Fin del juego (ha muerto)
+     * @todo
+     */
+    Runner.prototype.gameOver = function() {
+        console.log('Game Over');
+    };
     return Runner;
 })(Player);
