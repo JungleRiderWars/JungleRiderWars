@@ -17,6 +17,18 @@ var right=false;
 var duck= false;
 var fire=false;
 var jump=false;
+var cursors;
+var fireButton;
+var me = null;
+var observer = false;
+var enemigo = false;
+
+// Comunicaciones
+var socket=null;
+var players=[];
+
+
+
 
 
 
@@ -36,11 +48,15 @@ function preload() {
     // fullscreen setup
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     game.scale.fullScreenScaleMode = Phaser.ScaleManager.EXACT_FIT;
+
+    // Que siga jugando si pierde el foco.
+    game.stage.disableVisibilityChange = true;
+    game.stage.disablePauseScreen = true;
 }
 
 function create() {
+
     if (!game.device.desktop){ game.input.onDown.add(gofull, this); } //go fullscreen on mobile devices
-    
     game.physics.startSystem(Phaser.Physics.P2JS);  //activate physics
     game.physics.p2.gravity.y = 1200;  //realistic gravity
     game.world.setBounds(0, 0, 2000, 600);//(x, y, width, height)
@@ -68,9 +84,13 @@ function create() {
     player.animations.add('duckwalk', [10,11,12], 3, true);
     game.camera.follow(player); //always center player
 
-    // create our virtual game controller buttons 
+    // Incluimos la comunicación con el servidor
+    enableSockets();
+
+    if (!game.device.desktop) {
+    // create our virtual game controller buttons
     buttonjump = game.add.button(600, 500, 'buttonjump', null, this, 0, 1, 0, 1);  //game, x, y, key, callback, callbackContext, overFrame, outFrame, downFrame, upFrame
-    buttonjump.fixedToCamera = true;  //our buttons should stay on the same place  
+    buttonjump.fixedToCamera = true;  //our buttons should stay on the same place
     buttonjump.events.onInputOver.add(function(){jump=true;});
     buttonjump.events.onInputOut.add(function(){jump=false;});
     buttonjump.events.onInputDown.add(function(){jump=true;});
@@ -81,7 +101,7 @@ function create() {
     buttonfire.events.onInputOver.add(function(){fire=true;});
     buttonfire.events.onInputOut.add(function(){fire=false;});
     buttonfire.events.onInputDown.add(function(){fire=true;});
-    buttonfire.events.onInputUp.add(function(){fire=false;});        
+    buttonfire.events.onInputUp.add(function(){fire=false;});
 
     buttonleft = game.add.button(0, 472, 'buttonhorizontal', null, this, 0, 1, 0, 1);
     buttonleft.fixedToCamera = true;
@@ -115,11 +135,44 @@ function create() {
     buttondown.fixedToCamera = true;
     buttondown.events.onInputOver.add(function(){duck=true;});
     buttondown.events.onInputOut.add(function(){duck=false;});
+    buttondown.events.onInputOut.add(function(){duck=false;});
     buttondown.events.onInputDown.add(function(){duck=true;});
     buttondown.events.onInputUp.add(function(){duck=false;});
-};
+    }
+    else {
+        fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        game.input.keyboard.addKeyCapture([
+            Phaser.Keyboard.LEFT,
+            Phaser.Keyboard.RIGHT,
+            Phaser.Keyboard.UP,
+            Phaser.Keyboard.DOWN,
+            Phaser.Keyboard.SPACEBAR
+        ]);
+        cursors = game.input.keyboard.createCursorKeys();
+    }
+}
 
 function update() {
+    // Si es un movimiento remoto, no miramos los controles del cliente.
+    if(!(observer || enemigo)) {
+        // Control de teclados.
+        if (game.device.desktop) {
+            if (cursors.down.isDown) duck = true;
+            if (cursors.down.isUp) duck = false;
+            if (cursors.left.isDown) left = true;
+            if (cursors.left.isUp) left = false;
+            if (cursors.right.isDown) right = true;
+            if (cursors.right.isUp) right = false;
+            if (cursors.up.isDown) jump = true;
+            if (cursors.up.isUp) jump = false;
+            if (fireButton.isDown) fire = true;
+            if (fireButton.isUp) fire = false;
+        }
+
+        // Enviamos en este punto los datos al servidor para intentar tener menos lag.
+        if (left || right || jump || duck || fire)
+            socket.emit('mySight', left, right, jump, duck, fire,player.x,player.y);
+    }
     // define what should happen when a button is pressed
     if (left && !duck) {
         player.scale.x = -1;
@@ -130,11 +183,11 @@ function update() {
         player.scale.x = 1;
         player.body.moveRight(500);
         player.animations.play('walk');
-    } 
+    }
     else if (duck && !left && !right) {
-        player.body.velocity.x=0;
+        player.body.velocity.x = 0;
         player.animations.play('duck');
-    } 
+    }
     else if (duck && right) {
         player.scale.x = 1;
         player.body.moveRight(200);
@@ -148,20 +201,32 @@ function update() {
     else {
         player.loadTexture('mario', 0);
     }
+
+
     if (jump){ jump_now(); player.loadTexture('mario', 5);}  //change to another frame of the spritesheet
     if (fire){fire_now(); player.loadTexture('mario', 8); }
     if (duck){ player.body.setCircle(16,0,6);}else{ player.body.setCircle(22);}  //when ducking create a smaller hitarea - (radius,offsetx,offsety)
     if (game.input.currentPointers == 0 && !game.input.activePointer.isMouse){ fire=false; right=false; left=false; duck=false; jump=false;} //this works around a "bug" where a button gets stuck in pressed state
+
+    // Despues de la animación reseteamos los valores
+    left = false;
+    right = false;
+    jump = false;
+    duck = false;
+    fire = false;
 };
 
 function render(){
-    game.debug.text('jump:' + jump + ' duck:' + duck + ' left:' + left + ' right:' + right + ' fire:' + fire, 20, 20);
-    game.debug.text('x:' + player.x+ ' y:' + player.y,20,40);
+    game.debug.cameraInfo(game.camera, 500, 32);
+    game.debug.spriteCoords(player, 32, 32);
+
+    //game.debug.text('jump:' + jump + ' duck:' + duck + ' left:' + left + ' right:' + right + ' fire:' + fire, 20, 20);
+    //game.debug.text('x:' + player.x+ ' y:' + player.y,20,40);
 }
 
 
 //some useful functions
-function gofull() { game.scale.startFullScreen(false);}
+function gofull() { game.scale.startFullScreen(true);}
 function jump_now(){  //jump with small delay
     if (game.time.now > nextJump ){
         player.body.moveUp(600);
@@ -189,4 +254,51 @@ function fire_now() {
             fireball.body.setCircle(10);
         }
     }
+}
+
+
+function enableSockets(){
+    socket=io.connect();
+
+    // recibimos nuestra id.
+    socket.on('me', function(n, tipo, playerx, playery) {
+        me = n;
+        if(tipo == 0){
+            var t = game.add.text(game.world.centerX-800, 80, 'Player',{ font: "65px Arial", fill: "#ff0044", align: "center" });
+        }
+        // Si soy el observador, quito los controles de movimiento.
+        else if(tipo == 1){
+            enemigo = true;
+            var t = game.add.text(game.world.centerX-800, 80, 'Enemy',{ font: "65px Arial", fill: "#ff0044", align: "center" });
+            player.reset(playerx, playery);
+        }
+        else
+        {
+            observer = true;
+            var t = game.add.text(game.world.centerX-800, 80, 'Observer',{ font: "65px Arial", fill: "#ff0044", align: "center" });
+            player.reset(playerx, playery);
+
+        }
+
+    });
+    // Recibimos la comunicación del servidor.
+    socket.on('sight', function(n,l, r, j, d, f) {
+
+        // Si soy yo, no hago nada.
+        if(n != me) {
+            //game.debug.text(n, 20, 130);
+            //me.debug.text('jump:' + j + ' duck:' + d + ' left:' + l + ' right:' + r + ' fire:' + f, 20, 150);
+            // Si es nulo, eliminamos al jugador.
+            if (l == null && r == null && j == null && d == null && f == null)
+                players[n] = null;
+
+            left = l;
+            right = r;
+            jump = j;
+            duck = d;
+            fire = f;
+            this.update();
+
+        }
+    });
 }

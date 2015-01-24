@@ -1,14 +1,16 @@
 'use strict';
-var serverPort = process.env.PORT||1337;
+var serverPort = process.env.PORT||3000;
 var http = require('http').createServer(MyServer);
 var fs = require('fs');
 var io = require('socket.io').listen(http);
 var nSight=0;
 var gameEnd=0;
-var canvasWidth=300,canvasHeight=200;
 var players=[];
 var stack=[];
-var target=new Circle(100,100,10);
+var jugador;
+var enemigo;
+var observador;
+
 
 var contentTypes={
     ".html":"text/html",
@@ -29,13 +31,12 @@ function MyServer(request,response){
     var filePath = '.' + request.url;
     if (filePath == './')
         filePath = './index.html';
-    
+
     var extname = filePath.substr(filePath.lastIndexOf('.'));
     var contentType = contentTypes[extname];
     if(!contentType)
         contentType = 'application/octet-stream';
-    console.log((new Date()) + ' Serving ' + filePath + ' as ' + contentType);
-        
+
     fs.exists(filePath, function(exists){
         if(exists){
             fs.readFile(filePath, function(error, content){
@@ -61,28 +62,56 @@ io.sockets.on('connection', function(socket){
         socket.player = stack.pop();
     else
         socket.player = nSight++;
-    players[socket.player]=new Circle(0,0,5);
-    socket.emit('me', socket.player);
-    io.sockets.emit('sight', socket.player, 0, 0);
-    console.log(socket.id +' connected as player' + socket.player);
-    
-    socket.on('mySight', function(x, y, lastPress){
-        players[socket.player].x=x;
-        players[socket.player].y=y;
-        if(lastPress==1)
-            act(socket.player);
-        socket.volatile.emit('sight', socket.player, x, y, lastPress);
+    players[socket.player]=new Coords(0,0,5);
+
+    //io.sockets.emit('sight', socket.player, left, right, jump, duck, fire);
+
+    // Jugador es el primero que entra
+    if(socket.player == 0) {
+        jugador = socket.id;
+        console.log(socket.id + ' connected as player');
+        socket.emit('me', socket.player,0,null,null);
+
+    }
+
+    if(socket.player == 1) {
+        enemigo = socket.id;
+        console.log(socket.id + ' connected as enemy');
+        socket.emit('me', socket.player,1,players[0].x,players[0].y);
+        console.log(socket.player+ ' ' + players[0].x+ ' ' +players[0].y);
+
+    }
+
+    if(socket.player > 1) {
+        observador = socket.id;
+        console.log(socket.id + ' connected as observer');
+        socket.emit('me', socket.player,2,players[0].x,players[0].y);
+        console.log(socket.player+ ' ' + players[0].x+ ' ' +players[0].y);
+    }
+
+    socket.on('mySight', function(left, right, jump, duck, fire,x,y){
+        //socket.volatile.emit('sight', socket.player, left, right, jump, duck, fire);
+        // Si es el jugador el que se mueve, lo transmite a los demás
+        if(jugador == socket.id) {
+            players[0].x = x;
+            players[0].y = y;
+            io.sockets.emit('sight', socket.player, left, right, jump, duck, fire);
+            console.log('Player:' + socket.player +'  jump:' + jump + ' duck:' + duck + ' left:' + left + ' right:' + right + ' fire:' + fire);
+        }
+
+
     });
     
     socket.on('disconnect', function(){
-        io.sockets.emit('sight', socket.player, null, null);
-        console.log('Player' + socket.player + ' disconnected.');
-        if(io.sockets.clients().length<=1){
-            stack.length=0;
-            nSight=0;
-            console.log('Sights were reset to zero.');
-        }
+        io.sockets.emit('sight', socket.player, null, null, null, null, null);
+
+        if(socket.id == jugador)
+            console.log('Player' + socket.player + ' disconnected.');
+        else if(socket.player == enemigo)
+            console.log('Enemy' + socket.player + ' disconnected.');
         else
+            console.log('Observer' + socket.player + ' disconnected.');
+
             stack.push(socket.player);
     });
 });
@@ -91,6 +120,7 @@ function random(max){
     return ~~(Math.random()*max);
 }
 
+/*
 function act(player){
     var now=Date.now();
     if(gameEnd-now<-1000){
@@ -108,18 +138,16 @@ function act(player){
             io.sockets.emit('target',target.x,target.y);
         }
     }
-}
+}*/
 
-function Circle(x,y,radius){
-    this.x=(x==null)?0:x;
-    this.y=(y==null)?0:y;
-    this.radius=(radius==null)?0:radius;
-}
+function Coords(left, right, jump, duck, fire, x, y, velocity){
+    this.left=(left==null)?false:left;
+    this.right=(right==null)?false:right;
+    this.jump=(jump==null)?false:jump;
+    this.duck=(duck==null)?false:duck;
+    this.fire=(fire==null)?false:fire;
+    this.x=(x==null)?false:x;
+    this.y=(y==null)?false:y;
 
-Circle.prototype.distance=function(circle){
-    if(circle!=null){
-        var dx=this.x-circle.x;
-        var dy=this.y-circle.y;
-        return (Math.sqrt(dx*dx+dy*dy)-(this.radius+circle.radius));
-    }
+    this.velocity=(velocity==null)?0:velocity;
 }
