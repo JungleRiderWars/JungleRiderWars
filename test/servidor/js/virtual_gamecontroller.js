@@ -265,11 +265,11 @@ function enableSockets(){
     // recibimos nuestra id.
     socket.on('me', function(n, tipo, playerx, playery) {
         me = n;
-        if(tipo == 0){
+        if(tipo == 'jugador'){
             var t = game.add.text(game.world.centerX-800, 80, 'Player',{ font: "65px Arial", fill: "#ff0044", align: "center" });
         }
         // Si soy el observador, quito los controles de movimiento.
-        else if(tipo == 1){
+        else if(tipo == 'enemigo'){
             enemigo = true;
             var t = game.add.text(game.world.centerX-800, 80, 'Enemy',{ font: "65px Arial", fill: "#ff0044", align: "center" });
             player.reset(playerx, playery);
@@ -299,7 +299,6 @@ function enableSockets(){
             jump = j;
             duck = d;
             fire = f;
-            this.update();
 
         }
     });

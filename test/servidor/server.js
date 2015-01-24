@@ -3,8 +3,7 @@ var serverPort = process.env.PORT||3000;
 var http = require('http').createServer(MyServer);
 var fs = require('fs');
 var io = require('socket.io').listen(http);
-var nSight=0;
-var gameEnd=0;
+
 var players=[];
 var stack=[];
 var jugador = 0;
@@ -76,55 +75,49 @@ io.sockets.on('connection', function(socket){
     });
     // Para incluir al jugador cuando pulsa el botón jugar.
     socket.on('boton jugar', function() {
-        console.log('conectado');
-    if(stack.length)
-        socket.player = stack.pop();
-    else
-        socket.player = nSight++;
 
-    players[socket.player]=new Coords(0,0,5);
 
-    //io.sockets.emit('sight', socket.player, left, right, jump, duck, fire);
+        players[socket.id]=new Coords(null,null,null,null,null,null,null,null,null);
 
-    // Jugador es el primero que entra
-    if(socket.player == 0) {
-        jugador = socket.id;
-        console.log(socket.id + ' connected as player');
-        // Actualizamos botones en la pantalla de inicio.
-        io.sockets.emit('estado juego',1);
-        console.log('Boton Jugar-Estado juego 1')
-        socket.emit('me', socket.player,0,null,null);
+        //io.sockets.emit('sight', socket.player, left, right, jump, duck, fire);
 
-    }
+        // Jugador es el primero que entra
+        if(jugador == 0) {
+            jugador = socket.id;
+            players[jugador].rol = 'jugador';
+            console.log(jugador + ' connected as player');
+            // Actualizamos botones en la pantalla de inicio.
+            io.sockets.emit('estado juego',1);
+            console.log('Boton Jugar-Estado juego 1')
+            socket.emit('me', jugador,'jugador',null,null);
 
-    if(socket.player == 1) {
-        enemigo = socket.id;
-        console.log(socket.id + ' connected as enemy');
-        socket.emit('me', socket.player,1,players[0].x,players[0].y);
-        console.log(socket.player+ ' ' + players[0].x+ ' ' +players[0].y);
-        io.sockets.emit('chat message broadcast', socket.id + 'connected as enemy');
-        // Actualizamos botones en la pantalla de inicio.
-        io.sockets.emit('estado juego',2);
-        console.log('Boton Jugar-Estado juego 2')
-    }
+        }
+        else if(enemigo == 0) {
+            enemigo = socket.id;
+            players[enemigo].rol = 'enemigo';
+            console.log(enemigo + ' connected as enemy');
+            socket.emit('me', enemigo,'enemigo',players[enemigo].x,players[enemigo].y);
+            io.sockets.emit('chat message broadcast', enemigo + 'connected as enemy');
+            // Actualizamos botones en la pantalla de inicio.
+            io.sockets.emit('estado juego',2);
 
-    if(socket.player > 1) {
-        console.log(socket.id + ' connected as observer');
-        socket.emit('me', socket.player,2,players[0].x,players[0].y);
-        console.log(socket.player+ ' ' + players[0].x+ ' ' +players[0].y);
-        io.sockets.emit('chat message broadcast', socket.id + 'connected as observer');
-        console.log('Boton Jugar-Estado juego 2')
-    }
+        }
+        else
+        {
+            players[socket.id].rol = 'observador';
+            console.log(socket.id + ' connected as observer');
+            socket.emit('me', socket.id,'observador',players[socket.id].x,players[socket.id].y);
+            io.sockets.emit('chat message broadcast', socket.id + 'connected as observer');
+        }
     });
 
     socket.on('mySight', function(left, right, jump, duck, fire,x,y) {
         //socket.volatile.emit('sight', socket.player, left, right, jump, duck, fire);
         // Si es el jugador el que se mueve, lo transmite a los demás
         if (jugador == socket.id) {
-            players[0].x = x;
-            players[0].y = y;
-            io.sockets.emit('sight', socket.player, left, right, jump, duck, fire);
-            console.log('Player:' + socket.player + '  jump:' + jump + ' duck:' + duck + ' left:' + left + ' right:' + right + ' fire:' + fire);
+            players[jugador].x = x;
+            players[jugador].y = y;
+            io.sockets.emit('sight', socket.id, left, right, jump, duck, fire);
         }
     });
 
@@ -140,28 +133,26 @@ io.sockets.on('connection', function(socket){
     });
 
     socket.on('disconnect', function(){
-        io.sockets.emit('sight', socket.player, null, null, null, null, null);
+        io.sockets.emit('sight', socket.id, null, null, null, null, null);
 
         if(socket.id == jugador)
         {
             jugador = 0;
-            console.log('Player' + socket.player + ' disconnected.');
+            console.log('Player' + socket.id + ' disconnected.');
             io.sockets.emit('estado juego',0);
         }
         else if(socket.id == enemigo)
         {
             enemigo = 0;
-            console.log('Enemy' + socket.player + ' disconnected.');
+            console.log('Enemy' + socket.id + ' disconnected.');
             // Actualizamos botones en la pantalla de inicio.
             io.sockets.emit('estado juego',1);
         }
         else
         {
-            console.log('Observer' + socket.player + ' disconnected.');
+            console.log('Observer' + socket.id + ' disconnected.');
         }
 
-
-            stack.push(socket.player);
     });
 });
 
@@ -189,7 +180,7 @@ function act(player){
     }
 }*/
 
-function Coords(left, right, jump, duck, fire, x, y, velocity){
+function Coords(left, right, jump, duck, fire, x, y, velocity,rol){
     this.left=(left==null)?false:left;
     this.right=(right==null)?false:right;
     this.jump=(jump==null)?false:jump;
@@ -197,7 +188,7 @@ function Coords(left, right, jump, duck, fire, x, y, velocity){
     this.fire=(fire==null)?false:fire;
     this.x=(x==null)?false:x;
     this.y=(y==null)?false:y;
-
+    this.rol=(rol==null)?false:rol;
     this.velocity=(velocity==null)?0:velocity;
 }
 
