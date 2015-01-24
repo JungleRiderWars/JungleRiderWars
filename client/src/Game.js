@@ -12,6 +12,18 @@ var Game = {
      * @var Game
      */
     phaser: null,
+    
+    /**
+     * Activar depuración
+     * @type Boolean
+     */
+    DEBUG: true,
+    
+    /**
+     * Velocidad
+     */
+    SPEED: 10,
+    
     /**
      * Ejecutada cuando se inicia el juevo
      */
@@ -19,7 +31,7 @@ var Game = {
         this.phaser = new Phaser.Game(800, 600, Phaser.AUTO);
         
         this.addScenes();
-        this.phaser.state.start('RunnerScene');
+        this.phaser.state.start('RunnerScene'); // Por ahora forzamos la escena
 
         window.addEventListener('resize', function() {
             Game.onResize();
