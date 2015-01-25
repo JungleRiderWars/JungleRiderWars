@@ -48,7 +48,9 @@ var Game = {
         this.player = {};
 
         this.addScenes();
-        Game.phaser.state.start('PortadaScene'); // Por ahora forzamos la escena
+        //Game.phaser.state.start('PortadaScene'); // Por ahora forzamos la escena
+        Game.phaser.state.start('RunnerScene'); // Por ahora forzamos la escena
+
 
     },
     /**
