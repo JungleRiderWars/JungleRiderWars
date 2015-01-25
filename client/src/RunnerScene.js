@@ -38,7 +38,8 @@ var RunnerScene = (function(_super) {
 
         this.load.audio('background', ['assets/background.mp3', 'assets/background.ogg']);
         this.load.audio('loop', ['assets/loop.mp3', 'assets/loop.ogg']);
-
+        this.load.image('interface', 'assets/interface/background.png');
+        
         // Carga los background
         for (var i in this.background) {
             this.load.image(this.background[i].image, 'assets/scene/' + this.background[i].image + '.png');
@@ -77,6 +78,8 @@ var RunnerScene = (function(_super) {
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.refresh();
         this.input.onDown.add(this.goFull, this);
+        
+        this.add.sprite(this.scale.width - 630, 50, 'interface');
 
         // Set limits and gravity
         this.world.setBounds(-500, 0, this.scale.width + 500, this.scale.height - Game.INITIAL_HEIGHT + 30);

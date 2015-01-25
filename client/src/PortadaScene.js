@@ -52,10 +52,10 @@ var PortadaScene = (function(_super) {
         this.time.inited = this.time.now;
 
         // FullScreen
-        this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
-        this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        //this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+        //this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.refresh();
-        this.input.onDown.add(this.goFull, this);
+        //this.input.onDown.add(this.goFull, this);
 
         // Add background
         this.add.sprite(0, 0, 'portada');
