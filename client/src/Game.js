@@ -63,7 +63,7 @@ var Game = {
      */
     enableSockets: function() {
 
-        this.socket = io.connect("http://10.11.60.144:3000");
+        this.socket = io.connect();
 
         // Iniciamos el juego.
         this.socket.emit('boton jugar', '');
