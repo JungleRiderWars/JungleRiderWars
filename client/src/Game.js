@@ -16,7 +16,7 @@ var Game = {
      * Activar depuración
      * @type Boolean
      */
-    DEBUG: true,
+    DEBUG: false,
     /**
      * Velocidad por defecto
      */
@@ -41,25 +41,26 @@ var Game = {
     /**
      * Ejecutada cuando se inicia el juevo
      */
-    init: function () {
+    init: function() {
         this.phaser = new Phaser.Game(this.SIZE.width, this.SIZE.height, Phaser.AUTO);
         // Comunicaciones
         this.socket = null;
         this.player = {};
 
-        this.enableSockets();
+        //this.enableSockets();
         this.addScenes();
+                    Game.phaser.state.start('RunnerScene'); // Por ahora forzamos la escena
     },
     /**
      * Añade las escenas
      */
-    addScenes: function () {
+    addScenes: function() {
         this.phaser.state.add('RunnerScene', RunnerScene);
     },
     /**
      * Comunicaciones
      */
-    enableSockets: function () {
+    enableSockets: function() {
 
         this.socket = io.connect("http://10.11.60.144:3000");
 
@@ -67,34 +68,36 @@ var Game = {
         this.socket.emit('boton jugar', '');
 
         // recibimos nuestra id.
-        this.socket.on('me', function (id, tipo, playerx, playery) {
+        this.socket.on('me', function(id, tipo, playerx, playery) {
             Game.CONNECTION_ID = id;
-            
+
             Game.player.type = tipo;
             Game.player.resetx = playerx;
             Game.player.resety = playery;
             Game.phaser.state.start('RunnerScene'); // Por ahora forzamos la escena
-            
-        });
-        
-        // Recibimos la comunicación del servidor.
-        this.socket.on('sight', function (id, left, right, space, ctrl, x, y) {
 
-            // Si soy yo, no hago nada.
-            if (id !== Game.CONNECTION_ID) {
-                Game.scene.runner.onReceived( left, right, space, ctrl, x, y );
+        });
+
+        // Recibimos la comunicación del servidor.
+        this.socket.on('sight', function(id, left, right, space, ctrl, x, y) {
+
+            if (Game.sceme) {
+                // Si soy yo, no hago nada.
+                if (id !== Game.CONNECTION_ID) {
+                    Game.scene.runner.onReceived(left, right, space, ctrl, x, y);
+                }
             }
         });
-        
+
         // Recibe un objeto
-        this.socket.on('send addObject', function(type){
-           eval('var item = ' + type + ';'); 
-           if (Game.scene.time.now > item.nextUse) {
+        this.socket.on('send addObject', function(type) {
+            eval('var item = ' + type + ';');
+            if (Game.scene.time.now > item.nextUse) {
                 Game.scene.addItem(new item(Game.scene));
                 item.nextUse = Game.scene.time.now + item.DELAY * 1000;
             }
         });
-        
+
     }
 }
 
