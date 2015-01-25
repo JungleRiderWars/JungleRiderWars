@@ -32,6 +32,7 @@ var Water = (function(_super) {
     Water.prototype.collisionHandler = function(runner, item) {
         _super.prototype.collisionHandler.call(this, runner, item);
         this.scene.runner.setInWater(true);
+        this.scene.runner.score -= Water.SCORE_PENALTY;
         console.log('te mojas y vas lento');
     };
 
@@ -72,5 +73,6 @@ var Water = (function(_super) {
     Water.WIDTH = 398;
     Water.HEIGHT = 20;
     Water.AUDIO_FILES = [];
+    Water.SCORE_PENALTY = 2;
     return Water;
 })(Item);

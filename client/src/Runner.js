@@ -23,6 +23,7 @@ var Runner = (function(_super) {
         this.velocity = 0;
         this.walkingTime = 1;
         this.inWater = 0;
+        this.score = 0;
     }
 
     /**
@@ -45,10 +46,10 @@ var Runner = (function(_super) {
         // Audio
         this.audioJump = this.scene.add.audio('jump', 1, false);
         this.audioJumpFall = this.scene.add.audio('jumpFall', 1, false);
-        this.audioWalk1 = this.scene.add.audio('walk1', 0.2, false);
-        this.audioWalk2 = this.scene.add.audio('walk2', 0.2, false);
-        this.audioWaterWalk1 = this.scene.add.audio('walkWater1', 1, false);
-        this.audioWaterWalk2 = this.scene.add.audio('walkWater2', 1, false);
+        this.audioWalk1 = this.scene.add.audio('walk1', 0.25, false);
+        this.audioWalk2 = this.scene.add.audio('walk2', 0.25, false);
+        this.audioWaterWalk1 = this.scene.add.audio('walkWater1', 0.25, false);
+        this.audioWaterWalk2 = this.scene.add.audio('walkWater2', 0.25, false);
 
     };
     /**
@@ -73,8 +74,7 @@ var Runner = (function(_super) {
             Game.player.resetx = null;
         }
 
-        if (Game.player.type === 'jugador' && (this.controls.left.isDown
-                || this.controls.right.isDown || this.controls.space.isDown || this.controls.ctrl.isDown)) {
+        if (Game.player.type === 'jugador' ) {
             Game.socket.emit('mySight', this.controls.left.isDown, this.controls.right.isDown, this.controls.space.isDown, this.controls.ctrl.isDown, this.sprite.x, this.sprite.y);
         }
         this.scene.speed = Game.SPEED + this.velocity * 5;
@@ -149,6 +149,10 @@ var Runner = (function(_super) {
         // Seteamos el estado de que está en agua a false para que no se quede activo
         // este estado de forma permantent. Se envia a true desde el collideHandler del objeto Water
         this.inWater = false;
+
+        // Actualiza la puntuciaón del jugador en función de la velocidad
+        this.score++;
+        this.score += this.velocity;
 
         this.sprite.body.velocity.x = this.velocity * 100;
     };

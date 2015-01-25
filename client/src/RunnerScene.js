@@ -36,6 +36,9 @@ var RunnerScene = (function(_super) {
     RunnerScene.prototype.preload = function() {
         this.runner = new Runner(this);
 
+        this.load.audio('background', ['assets/background.mp3', 'assets/background.ogg']);
+        this.load.audio('loop', ['assets/loop.mp3', 'assets/loop.ogg']);
+
         // Carga los background
         for (var i in this.background) {
             this.load.image(this.background[i].image, 'assets/scene/' + this.background[i].image + '.png');
@@ -56,10 +59,10 @@ var RunnerScene = (function(_super) {
         this.input.onDown.add(function() {
             Game.socket.emit('receive addObject', 'Volcan');
             /*
-            if (this.time.now > Volcan.nextUse) {
-                this.addItem(new Volcan(this));
-                Volcan.nextUse = this.time.now + Volcan.DELAY * 1000;
-            }*/
+             if (this.time.now > Volcan.nextUse) {
+             this.addItem(new Volcan(this));
+             Volcan.nextUse = this.time.now + Volcan.DELAY * 1000;
+             }*/
         }, this);
     };
 
@@ -99,12 +102,32 @@ var RunnerScene = (function(_super) {
         this.limit.body.collideWorldBounds = true;
         this.limit.body.immovable = true;
 
+        // Score
+        var scoreText = "Score: " + this.score;
+        var scoreStyle = { font: "65px Arial", fill: "#ff0044", align: "center" };
+        this.scoreText = this.add.text(0, 0, scoreText, scoreStyle);
+
         this.runner.create();
+
+        this.backgroundAudio = this.add.audio('background', 0.6, false);
+        this.loopAudio = this.add.audio('loop', 0.6, true);
+
+
     };
     /**
-     * Se ejecuta en cada frame
+     * Se ejecuta en cada frame  
      */
     RunnerScene.prototype.update = function() {
+
+        if (!this.backgroundAudio.isPlaying && !this.backgroundIsPlayed) {
+            this.backgroundIsPlayed = true;
+            this.backgroundAudio.play();
+        }
+
+        else if (!this.backgroundAudio.isPlaying && !this.loopPlaying) {
+            this.loopPlaying = true;
+            this.loopAudio.play();
+        }
 
         // Por cada elemento de la lista
         for (var i in this.itemsInScene) {
@@ -118,6 +141,9 @@ var RunnerScene = (function(_super) {
         for (var i in this.background) {
             this.background[i].sprite.tilePosition.x -= this.speed * this.background[i].speed;
         }
+
+        // Actualiza la puntuación
+        this.updateScore();
 
         this.runner.update();
 
@@ -133,7 +159,7 @@ var RunnerScene = (function(_super) {
             this.game.debug.spriteCoords(this.runner.sprite, 32, 32);
             this.game.debug.body(this.exit);
             this.game.debug.body(this.limit);
-            
+
             if (Game.player.type === 'jugador') {
                 this.add.text(this.world.centerX - 800, 80, 'Player', {
                     font: "65px Arial",
@@ -182,6 +208,13 @@ var RunnerScene = (function(_super) {
          } else {
          this.scale.startFullScreen(false);
          }
+    };
+
+    /**
+     * Actualiza la puntuacion
+     */
+    RunnerScene.prototype.updateScore = function() {
+        this.scoreText.setText("Score: " + this.runner.score);
     };
 
     return RunnerScene;
