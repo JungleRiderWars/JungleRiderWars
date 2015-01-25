@@ -59,7 +59,12 @@ var Trunk = (function(_super) {
         _super.prototype.onGameZone.call(this);
         this.music.play();
     };
-    
+
+    Trunk.prototype.isOverlap = function() {
+        return Trunk.OVERLAP;
+    };
+
+    Trunk.OVERLAP = false;
     Trunk.DELAY = 1;
     Trunk.nextUse = 0;
     Trunk.TYPE = 'trunk';

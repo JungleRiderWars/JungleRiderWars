@@ -31,9 +31,8 @@ var Water = (function(_super) {
      */
     Water.prototype.collisionHandler = function(runner, item) {
         _super.prototype.collisionHandler.call(this, runner, item);
-        if(!this.collideSound.isPlaying)
-        this.collideSound.play();
-        console.log('te quemas');
+        this.scene.runner.setInWater(true);
+        console.log('te mojas y vas lento');
     };
 
     /**
@@ -61,7 +60,12 @@ var Water = (function(_super) {
         _super.prototype.onGameZone.call(this);
         this.music.play();
     };
-    
+
+    Water.prototype.isOverlap = function() {
+        return Water.OVERLAP;
+    };
+
+    Water.OVERLAP = true;
     Water.DELAY = 0;
     Water.nextUse = 0;
     Water.TYPE = 'water';

@@ -29,7 +29,11 @@ var Item = (function() {
      * En cada frame
      */
     Item.prototype.update = function() {
-        this.scene.physics.arcade.collide(this.scene.runner.sprite, this.sprite, this.collisionHandler, null, this);
+        if(this.isOverlap())
+            this.scene.physics.arcade.overlap(this.scene.runner.sprite, this.sprite, this.collisionHandler, null, this);
+        else
+            this.scene.physics.arcade.collide(this.scene.runner.sprite, this.sprite, this.collisionHandler, null, this);
+
         this.scene.physics.arcade.overlap(this.scene.exit, this.sprite, this.destroy, null, this);
         this.scene.physics.arcade.overlap(this.scene.limit, this.sprite, this.onGameZone, null, this);
         this.sprite.body.velocity.x = -this.scene.speed * 10;

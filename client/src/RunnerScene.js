@@ -52,12 +52,22 @@ var RunnerScene = (function(_super) {
         this.stage.disableVisibilityChange = true;
         this.stage.disablePauseScreen = true;
 
+        // FIXME: QUITAR, ESTO LO TIENE QUE HACER EL ENEMIGO
+        this.input.onUp.add(function() {
+            if (this.time.now > Water.nextUse) {
+                this.addItem(new Water(this));
+                Water.nextUse = this.time.now + Water.DELAY * 1000;
+            }
+        }, this);
+
+        /*
         this.input.onUp.add(function() {
             if (this.time.now > Volcan.nextUse) {
                 this.addItem(new Volcan(this));
                 Volcan.nextUse = this.time.now + Volcan.DELAY * 1000;
             }
         }, this);
+        */
     };
 
     /**

@@ -129,12 +129,15 @@ var Runner = (function(_super) {
                 else this.audioWalk2.play();
                 this.walk = 2;
             }
-            
+
             this.walkingTime = this.scene.time.now + (-this.velocity+3)*100;
         }
         
         this.sprite.body.velocity.x = this.velocity * 100;
 
+        // Seteamos el estado de que está en agua a false para que no se quede activo
+        // este estado de forma permantent. Se envia a true desde el collideHandler del objeto Water
+        this.inWater = false;
     };
 
     /**
@@ -152,6 +155,15 @@ var Runner = (function(_super) {
     Runner.prototype.onFloor = function(){
         return this.sprite.body.touching.down || this.sprite.body.onFloor();
     };
-    
+
+    /**
+     * Setea si el corredor está en el agua
+     * @param bool inWater
+     */
+    Runner.prototype.setInWater = function(inWater){
+        this.inWater = inWater;
+    };
+
+
     return Runner;
 })(Player);
