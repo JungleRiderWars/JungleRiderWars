@@ -23,8 +23,11 @@ var PortadaScene = (function(_super) {
 
         // Carga el background
         this.load.image('portada', 'assets/interface/portada.png');
+        this.load.image('creditos', 'assets/interface/creditos.png');
         this.load.spritesheet('boton', 'assets/interface/botonesplay.png', 405, 251);
         this.load.spritesheet('botoncreditos', 'assets/interface/interfacecredits.png', 405, 251);
+        this.load.spritesheet('botonback', 'assets/interface/botonback.png', 405, 251);
+
         //this.load.image('boton', 'assets/interface/boton.png');
 
         // Pre carga objetos (botones)
@@ -57,15 +60,16 @@ var PortadaScene = (function(_super) {
         // Add background
         this.add.sprite(0, 0, 'portada');
         // Add button
-        var buttonplay = this.add.button(this.scale.width-800, this.scale.height-500, 'boton', this.playOnClick, this, 1, 0, 0);
+        var buttonplay = this.add.button(this.scale.width-700, this.scale.height-550, 'boton', this.playOnClick, this, 1, 0, 0);
         buttonplay.onInputOver.add(this.playOver, this);
         buttonplay.onInputOut.add(this.playOut, this);
         buttonplay.onInputUp.add(this.playUp, this);
 
-        var buttoncredits = this.add.button(this.scale.width-800, this.scale.height-500, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
+        var buttoncredits = this.add.button(this.scale.width-700, this.scale.height-300, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
         buttoncredits.onInputOver.add(this.creditsOver, this);
         buttoncredits.onInputOut.add(this.creditsOut, this);
         buttoncredits.onInputUp.add(this.creditsUp, this);
+
 
     };
 
@@ -91,9 +95,37 @@ var PortadaScene = (function(_super) {
         console.log('button out');
     };
     PortadaScene.prototype.creditsOnClick = function() {
-        Game.enableSockets();
+        this.add.sprite(0, 0, 'creditos');
+        var buttonback = this.add.button(170, 10, 'botonback', this.backOnClick, this, 1, 0, 0);
+        buttonback.onInputOver.add(this.backOver, this);
+        buttonback.onInputOut.add(this.backOut, this);
+        buttonback.onInputUp.add(this.backUp, this);
     };
 
+    PortadaScene.prototype.backUp = function() {
+        console.log('button up', arguments);
+    };
+    PortadaScene.prototype.backOver = function() {
+        console.log('button over');
+    };
+    PortadaScene.prototype.backOut = function() {
+        console.log('button out');
+    };
+    PortadaScene.prototype.backOnClick = function() {
+
+        this.add.sprite(0, 0, 'portada');
+        // Add button
+        var buttonplay = this.add.button(this.scale.width-700, this.scale.height-550, 'boton', this.playOnClick, this, 1, 0, 0);
+        buttonplay.onInputOver.add(this.playOver, this);
+        buttonplay.onInputOut.add(this.playOut, this);
+        buttonplay.onInputUp.add(this.playUp, this);
+
+        var buttoncredits = this.add.button(this.scale.width-700, this.scale.height-300, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
+        buttoncredits.onInputOver.add(this.creditsOver, this);
+        buttoncredits.onInputOut.add(this.creditsOut, this);
+        buttoncredits.onInputUp.add(this.creditsUp, this);
+
+    };
 
     /**
      * Se ejecuta en cada frame

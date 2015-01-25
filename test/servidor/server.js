@@ -81,15 +81,8 @@ io.sockets.on('connection', function(socket){
 
         //io.sockets.emit('sight', socket.player, left, right, jump, duck, fire);
 
-        // prueba, siempre como player
-        jugador = socket.id;
-        players[jugador].rol = 'jugador';
-        console.log(jugador + ' connected as player');
-        // Actualizamos botones en la pantalla de inicio.
-        io.sockets.emit('estado juego',1);
-        console.log('Boton Jugar-Estado juego 1')
-        socket.emit('me', jugador,'jugador',null,null);
-        /*
+
+
         // Jugador es el primero que entra
         if(jugador == 0) {
             jugador = socket.id;
@@ -117,7 +110,7 @@ io.sockets.on('connection', function(socket){
             console.log(socket.id + ' connected as observer');
             socket.emit('me', socket.id,'observador',players[jugador].x,players[jugador].y);
             io.sockets.emit('chat message broadcast', socket.id + 'connected as observer');
-        }*/
+        }
     });
 
     socket.on('mySight', function(left, right, jump, rolling,x,y) {
