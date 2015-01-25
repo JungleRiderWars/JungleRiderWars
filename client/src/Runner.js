@@ -18,15 +18,18 @@ var Runner = (function(_super) {
         scene.load.audio('jumpFall', ['assets/jumpFall.mp3', 'asset/jumpFall.ogg']);
         scene.load.audio('walk1', ['assets/walk1.mp3', 'assets/walk1.ogg']);
         scene.load.audio('walk2', ['assets/walk2.mp3', 'assets/walk2.ogg']);
+        scene.load.audio('walkWater1', ['assets/walkWater1.mp3', 'assets/walkWater1.ogg']);
+        scene.load.audio('walkWater2', ['assets/walkWater2.mp3', 'assets/walkWater2.ogg']);
         this.velocity = 0;
         this.walkingTime = 1;
+        this.inWater = 0;
     }
 
     /**
      * Crea el corredor
      */
     Runner.prototype.create = function() {
-        this.sprite = this.scene.add.sprite(this.scene.world.width / 2 - 25, this.scene.world.height - Game.INITIAL_HEIGHT, 'runner');
+        this.sprite = this.scene.add.sprite(this.scene.world.width / 2 - 300, this.scene.world.height - Game.INITIAL_HEIGHT, 'runner');
         this.scene.physics.enable(this.sprite, Phaser.Physics.ARCADE);
         this.sprite.body.setSize(65, 220, 120, 50);
         this.sprite.body.collideWorldBounds = true;
@@ -36,12 +39,15 @@ var Runner = (function(_super) {
         this.scene.input.keyboard.addKeyCapture([Phaser.Keyboard.SPACEBAR, Phaser.Keyboard.LEFT, Phaser.Keyboard.RIGHT]);
         this.controls = this.scene.input.keyboard.createCursorKeys();
         this.controls.space = this.scene.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        this.controls.ctrl = this.scene.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
         
         // Audio
-        this.audioJump = this.scene.add.audio('jump', 1, false);
+        this.audioJump = this.scene.add .audio('jump', 1, false);
         this.audioJumpFall = this.scene.add.audio('jumpFall', 1, false);
-        this.audioWalk1 = this.scene.add.audio('walk1', 1, false);
-        this.audioWalk2 = this.scene.add.audio('walk2', 1, false);
+        this.audioWalk1 = this.scene.add.audio('walk1', 0.3, false);
+        this.audioWalk2 = this.scene.add.audio('walk2', 0.3, false);
+        this.audioWaterWalk1 = this.scene.add.audio('walkWater1', 1, false);
+        this.audioWaterWalk2 = this.scene.add.audio('walkWater2', 1, false);
         
     };
     /**
@@ -63,7 +69,10 @@ var Runner = (function(_super) {
 
         this.scene.speed = Game.SPEED + this.velocity * 5;
 
-        if( (this.controls.left.isDown && this.controls.right.isDown) || 
+        if ( this.controls.ctrl.isDown ){
+            this.velocity = 2;
+        }
+        else if( (this.controls.left.isDown && this.controls.right.isDown) || 
                 (!this.controls.left.isDown && !this.controls.right.isDown) ){
             this.velocity = 0;
         }
@@ -71,13 +80,17 @@ var Runner = (function(_super) {
             this.velocity = -2;
         }
         else this.velocity = 2;
-        
+
         if( this.onFloor() && this.jumping ){
             this.audioJumpFall.play();
             this.jumping = false;
         }
         
-        if( !this.onFloor() ){
+        if ( this.controls.ctrl.isDown ) {
+            this.sprite.animations.play('rolling');
+            
+        }
+        else if( !this.onFloor() ){
             this.sprite.loadTexture('runner', 9);
         }
         
@@ -101,15 +114,19 @@ var Runner = (function(_super) {
             this.sprite.animations.play('sprint');
 
         else
-            this.sprite.animations.play('running');
+            this.sprite.animations.play('sprint');
         
         if( this.onFloor() && this.scene.time.now > this.walkingTime ){
             if( this.walk !== 1 ){
-                this.audioWalk1.play();
+                if( this.inWater )
+                    this.audioWaterWalk1.play();
+                else this.audioWalk1.play();
                 this.walk = 1;
             }
             else {
-                this.audioWalk2.play();
+                if( this.inWater )
+                    this.audioWaterWalk2.play();
+                else this.audioWalk2.play();
                 this.walk = 2;
             }
             

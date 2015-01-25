@@ -41,8 +41,8 @@ var Volcan = (function(_super) {
      */
     Volcan.prototype.create = function() {
         _super.prototype.create.call(this);
-        this.music = this.scene.add.audio('volcan', 1, false);
-        this.collideSound = this.scene.add.audio('volcanCollide', 1, false);
+        this.music = this.scene.add.audio('volcan', 1.5, false);
+        this.collideSound = this.scene.add.audio('volcanCollide', 1.5, false);
     };
     
     /**

@@ -23,7 +23,7 @@ var RunnerScene = (function(_super) {
         ];
 
         // Definicion de objetos
-        this.item = [Trunk, Volcan];
+        this.item = [Trunk, Volcan, Water];
 
         // Velocidad
         this.speed = Game.SPEED;
@@ -53,9 +53,9 @@ var RunnerScene = (function(_super) {
         this.stage.disablePauseScreen = true;
 
         this.input.onUp.add(function() {
-            if (this.time.now > Trunk.nextUse) {
-                this.addItem(new Trunk(this));
-                Trunk.nextUse = this.time.now + Trunk.DELAY * 1000;
+            if (this.time.now > Volcan.nextUse) {
+                this.addItem(new Volcan(this));
+                Volcan.nextUse = this.time.now + Volcan.DELAY * 1000;
             }
         }, this);
     };
@@ -92,7 +92,7 @@ var RunnerScene = (function(_super) {
         // Runner limit
         this.limit = this.add.sprite(this.scale.width - Game.SIZE.enemy, Game.INITIAL_HEIGHT);
         this.physics.enable(this.limit, Phaser.Physics.ARCADE);
-        this.limit.body.setSize(2, this.scale.height, 0, 0);
+        this.limit.body.setSize(5, this.scale.height, 0, 0);
         this.limit.body.collideWorldBounds = true;
         this.limit.body.immovable = true;
 
