@@ -81,6 +81,15 @@ io.sockets.on('connection', function(socket){
 
         //io.sockets.emit('sight', socket.player, left, right, jump, duck, fire);
 
+        // prueba, siempre como player
+        jugador = socket.id;
+        players[jugador].rol = 'jugador';
+        console.log(jugador + ' connected as player');
+        // Actualizamos botones en la pantalla de inicio.
+        io.sockets.emit('estado juego',1);
+        console.log('Boton Jugar-Estado juego 1')
+        socket.emit('me', jugador,'jugador',null,null);
+        /*
         // Jugador es el primero que entra
         if(jugador == 0) {
             jugador = socket.id;
@@ -96,7 +105,7 @@ io.sockets.on('connection', function(socket){
             enemigo = socket.id;
             players[enemigo].rol = 'enemigo';
             console.log(enemigo + ' connected as enemy');
-            socket.emit('me', enemigo,'enemigo',players[enemigo].x,players[enemigo].y);
+            socket.emit('me', enemigo,'enemigo',players[jugador].x,players[jugador].y);
             io.sockets.emit('chat message broadcast', enemigo + 'connected as enemy');
             // Actualizamos botones en la pantalla de inicio.
             io.sockets.emit('estado juego',2);
@@ -106,19 +115,20 @@ io.sockets.on('connection', function(socket){
         {
             players[socket.id].rol = 'observador';
             console.log(socket.id + ' connected as observer');
-            socket.emit('me', socket.id,'observador',players[socket.id].x,players[socket.id].y);
+            socket.emit('me', socket.id,'observador',players[jugador].x,players[jugador].y);
             io.sockets.emit('chat message broadcast', socket.id + 'connected as observer');
-        }
+        }*/
     });
 
-    socket.on('mySight', function(left, right, jump, duck, fire,x,y) {
+    socket.on('mySight', function(left, right, jump, rolling,x,y) {
         //socket.volatile.emit('sight', socket.player, left, right, jump, duck, fire);
         // Si es el jugador el que se mueve, lo transmite a los demás
         if (jugador == socket.id) {
             players[jugador].x = x;
             players[jugador].y = y;
-            io.sockets.emit('sight', socket.id, left, right, jump, duck, fire);
+            io.sockets.emit('sight', socket.id, left, right, jump, rolling, x, y);
         }
+        console.log('Player: '+ socket.id+' ->'+left+' '+right+' '+jump+' '+rolling+' '+x+' '+y)
     });
 
     socket.on('chat message', function(msg){
@@ -130,6 +140,12 @@ io.sockets.on('connection', function(socket){
             msg = 'Observer - ' + socket.id + ': ' + msg;
 
         io.emit('chat message', msg);
+    });
+
+    // Recepcion de haber añadido un objeto en la escena.
+    socket.on('receive addObject', function(idObjeto) {
+        io.sockets.emit('send addObject', idObjeto);
+        console.log('Player: '+ socket.id+' - Envia Objeto: '+idObjeto)
     });
 
     socket.on('disconnect', function(){
@@ -154,7 +170,12 @@ io.sockets.on('connection', function(socket){
         }
 
     });
+
+
 });
+
+
+
 
 function random(max){
     return ~~(Math.random()*max);
@@ -180,15 +201,13 @@ function act(player){
     }
 }*/
 
-function Coords(left, right, jump, duck, fire, x, y, velocity,rol){
+function Coords(left, right, jump, rolling, x, y,rol){
     this.left=(left==null)?false:left;
     this.right=(right==null)?false:right;
     this.jump=(jump==null)?false:jump;
-    this.duck=(duck==null)?false:duck;
-    this.fire=(fire==null)?false:fire;
+    this.rolling=(rolling==null)?false:rolling;
     this.x=(x==null)?false:x;
     this.y=(y==null)?false:y;
     this.rol=(rol==null)?false:rol;
-    this.velocity=(velocity==null)?0:velocity;
 }
 

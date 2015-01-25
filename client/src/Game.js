@@ -16,7 +16,7 @@ var Game = {
      * Activar depuración
      * @type Boolean
      */
-    DEBUG: true,
+    DEBUG: false,
     /**
      * Velocidad por defecto
      */
@@ -47,15 +47,19 @@ var Game = {
         this.socket = null;
         this.player = {};
 
-        this.enableSockets();
+        //this.enableSockets();
         this.addScenes();
+        Game.phaser.state.start('PortadaScene'); // Por ahora forzamos la escena
+
     },
     /**
      * Añade las escenas
      */
     addScenes: function () {
         this.phaser.state.add('RunnerScene', RunnerScene);
+        this.phaser.state.add('PortadaScene', PortadaScene);
     },
+
     /**
      * Comunicaciones
      */
