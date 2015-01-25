@@ -24,6 +24,7 @@ var PortadaScene = (function(_super) {
         // Carga el background
         this.load.image('portada', 'assets/interface/portada.png');
         this.load.image('creditos', 'assets/interface/creditos.png');
+        this.load.image('historia', 'assets/interface/historia.png');
         this.load.spritesheet('boton', 'assets/interface/botonesplay.png', 405, 251);
         this.load.spritesheet('botoncreditos', 'assets/interface/interfacecredits.png', 405, 251);
         this.load.spritesheet('botonback', 'assets/interface/botonback.png', 405, 251);
@@ -86,7 +87,9 @@ var PortadaScene = (function(_super) {
         console.log('button out');
     };
     PortadaScene.prototype.playOnClick = function() {
-        Game.enableSockets();
+        this.add.sprite(0, 0, 'historia');
+        setTimeout("Game.enableSockets()",7000);
+
     };
     PortadaScene.prototype.creditsUp = function() {
         console.log('button up', arguments);

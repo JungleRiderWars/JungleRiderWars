@@ -87,10 +87,10 @@ var RunnerScene = (function(_super) {
         this.time.inited = this.time.now;
 
         // FullScreen
-        this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+        /*this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.refresh();
-        this.input.onDown.add(this.goFull, this);
+        this.input.onDown.add(this.goFull, this);*/
 
         // Set limits and gravity
         this.world.setBounds(-500, 0, this.scale.width + 500, this.scale.height - Game.INITIAL_HEIGHT + 30);
