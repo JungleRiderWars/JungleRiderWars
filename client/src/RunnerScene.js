@@ -53,11 +53,13 @@ var RunnerScene = (function(_super) {
         this.stage.disableVisibilityChange = true;
         this.stage.disablePauseScreen = true;
 
-        this.input.onUp.add(function() {
+        this.input.onDown.add(function() {
+            Game.socket.emit('receive addObject', 'Volcan');
+            /*
             if (this.time.now > Volcan.nextUse) {
                 this.addItem(new Volcan(this));
                 Volcan.nextUse = this.time.now + Volcan.DELAY * 1000;
-            }
+            }*/
         }, this);
     };
 

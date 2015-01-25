@@ -189,9 +189,7 @@ var Runner = (function(_super) {
             }
         };
         this.controls.right.isDown = true;
-        this.rolling = rolling;
         this.sprite.reset(x, y);
-        this.velocity = velocity;
     };
 
     return Runner;

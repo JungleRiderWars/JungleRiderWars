@@ -86,6 +86,15 @@ var Game = {
             }
         });
         
+        // Recibe un objeto
+        this.socket.on('send addObject', function(type){
+           eval('var item = ' + type + ';'); 
+           if (Game.scene.time.now > item.nextUse) {
+                Game.scene.addItem(new item(Game.scene));
+                item.nextUse = Game.scene.time.now + item.DELAY * 1000;
+            }
+        });
+        
     }
 }
 
