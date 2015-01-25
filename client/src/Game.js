@@ -48,6 +48,7 @@ var Game = {
         this.player = {};
 
         this.addScenes();
+        //this.enableSockets();
         Game.phaser.state.start('PortadaScene'); // Por ahora forzamos la escena
 
     },

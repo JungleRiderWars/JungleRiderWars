@@ -146,11 +146,11 @@ var PortadaScene = (function(_super) {
      * Se pone en pantalla completa
      */
     PortadaScene.prototype.goFull = function() {
-        /*if (this.scale.isFullScreen) {
+        if (this.scale.isFullScreen) {
          this.scale.stopFullScreen();
          } else {
          this.scale.startFullScreen(false);
-         }*/
+         }
     };
 
     return PortadaScene;
