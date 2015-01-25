@@ -23,6 +23,7 @@ var Runner = (function(_super) {
         this.velocity = 0;
         this.walkingTime = 1;
         this.inWater = 0;
+        this.score = 0;
     }
 
     /**
@@ -148,6 +149,10 @@ var Runner = (function(_super) {
         // Seteamos el estado de que está en agua a false para que no se quede activo
         // este estado de forma permantent. Se envia a true desde el collideHandler del objeto Water
         this.inWater = false;
+
+        // Actualiza la puntuciaón del jugador en función de la velocidad
+        this.score++;
+        this.score += this.velocity;
 
         this.sprite.body.velocity.x = this.velocity * 100;
     };

@@ -33,6 +33,8 @@ var Volcan = (function(_super) {
         _super.prototype.collisionHandler.call(this, runner, item);
         if(!this.collideSound.isPlaying)
         this.collideSound.play();
+
+        this.scene.runner.score -= Volcan.SCORE_PENALTY;
         console.log('te quemas');
     };
 
@@ -43,6 +45,7 @@ var Volcan = (function(_super) {
         _super.prototype.create.call(this);
         this.music = this.scene.add.audio('volcan', 1.5, false);
         this.collideSound = this.scene.add.audio('volcanCollide', 1.5, false);
+        this.sprite.body.setSize(Volcan.BOX_WIDTH, Volcan.BOX_HEIGHT, Volcan.BOX_OFFSET_X, Volcan.BOX_OFFSET_Y);
     };
     
     /**
@@ -72,6 +75,11 @@ var Volcan = (function(_super) {
     Volcan.TYPE = 'volcan';
     Volcan.WIDTH = 301;
     Volcan.HEIGHT = 200;
+    Volcan.BOX_WIDTH = 250;
+    Volcan.BOX_HEIGHT = 100;
+    Volcan.BOX_OFFSET_X = 10;
+    Volcan.BOX_OFFSET_Y = 100;
     Volcan.AUDIO_FILES = ['volcan', 'volcanCollide'];
+    Volcan.SCORE_PENALTY = 10;
     return Volcan;
 })(Item);

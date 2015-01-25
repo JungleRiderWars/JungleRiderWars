@@ -71,5 +71,6 @@ var Trunk = (function(_super) {
     Trunk.WIDTH = 198;
     Trunk.HEIGHT = 310;
     Trunk.AUDIO_FILES = ['trunk', 'trunkCollide'];
+    Trunk.SCORE_PENALTY = 1;
     return Trunk;
 })(Item);

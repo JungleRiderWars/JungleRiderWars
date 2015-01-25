@@ -47,16 +47,18 @@ var Game = {
         this.socket = null;
         this.player = {};
 
-        //this.enableSockets();
         this.addScenes();
-                    Game.phaser.state.start('RunnerScene'); // Por ahora forzamos la escena
+        Game.phaser.state.start('PortadaScene'); // Por ahora forzamos la escena
+
     },
     /**
      * Añade las escenas
      */
     addScenes: function() {
         this.phaser.state.add('RunnerScene', RunnerScene);
+        this.phaser.state.add('PortadaScene', PortadaScene);
     },
+
     /**
      * Comunicaciones
      */
@@ -76,6 +78,7 @@ var Game = {
             Game.player.resety = playery;
             Game.phaser.state.start('RunnerScene'); // Por ahora forzamos la escena
 
+            
         });
 
         // Recibimos la comunicación del servidor.

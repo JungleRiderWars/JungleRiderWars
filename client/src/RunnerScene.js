@@ -102,6 +102,11 @@ var RunnerScene = (function(_super) {
         this.limit.body.collideWorldBounds = true;
         this.limit.body.immovable = true;
 
+        // Score
+        var scoreText = "Score: " + this.score;
+        var scoreStyle = { font: "65px Arial", fill: "#ff0044", align: "center" };
+        this.scoreText = this.add.text(0, 0, scoreText, scoreStyle);
+
         this.runner.create();
 
         this.backgroundAudio = this.add.audio('background', 0.6, false);
@@ -136,6 +141,9 @@ var RunnerScene = (function(_super) {
         for (var i in this.background) {
             this.background[i].sprite.tilePosition.x -= this.speed * this.background[i].speed;
         }
+
+        // Actualiza la puntuación
+        this.updateScore();
 
         this.runner.update();
 
@@ -195,11 +203,18 @@ var RunnerScene = (function(_super) {
      * Se pone en pantalla completa
      */
     RunnerScene.prototype.goFull = function() {
-        /*if (this.scale.isFullScreen) {
+        if (this.scale.isFullScreen) {
          this.scale.stopFullScreen();
          } else {
          this.scale.startFullScreen(false);
-         }*/
+         }
+    };
+
+    /**
+     * Actualiza la puntuacion
+     */
+    RunnerScene.prototype.updateScore = function() {
+        this.scoreText.setText("Score: " + this.runner.score);
     };
 
     return RunnerScene;
