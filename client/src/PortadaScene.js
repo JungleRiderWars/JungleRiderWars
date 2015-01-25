@@ -91,6 +91,7 @@ var PortadaScene = (function(_super) {
     };
     PortadaScene.prototype.playOnClick = function() {
         this.add.sprite(0, 0, 'historia');
+        this.loopAudio.stop();
         setTimeout("Game.enableSockets()",7000);
 
     };
