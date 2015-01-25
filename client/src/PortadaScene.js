@@ -12,15 +12,11 @@ var PortadaScene = (function(_super) {
      */
     function PortadaScene() {
         _super.call(this);
-
-        //Game.scene = this;
     }
     /**
      * Precarga de la escena
      */
     PortadaScene.prototype.preload = function() {
-//        this.runner = new Runner(this);
-
         // Carga el background
         this.load.image('portada', 'assets/interface/portada.png');
         this.load.image('creditos', 'assets/interface/creditos.png');
@@ -30,20 +26,9 @@ var PortadaScene = (function(_super) {
         this.load.spritesheet('botonback', 'assets/interface/botonback.png', 405, 251);
         this.load.audio('loop', ['assets/menu.mp3', 'assets/menu.ogg']);
 
-        //this.load.image('boton', 'assets/interface/boton.png');
-
-        // Pre carga objetos (botones)
-        /*for (var i in this.item) {
-            this.load.spritesheet(this.item[i].TYPE, 'assets/item/' + this.item[i].TYPE + '.png', this.item[i].WIDTH, this.item[i].HEIGHT);
-            for (var j in this.item[i].AUDIO_FILES) {
-                this.load.audio(this.item[i].AUDIO_FILES[j], ['assets/item/' + this.item[i].AUDIO_FILES[j] + '.mp3', '/assets/item/' + this.item[i].AUDIO_FILES[j] + '.ogg']);
-            }
-        }*/
-
         // Works without focus
         this.stage.disableVisibilityChange = true;
         this.stage.disablePauseScreen = true;
-
 
     };
 

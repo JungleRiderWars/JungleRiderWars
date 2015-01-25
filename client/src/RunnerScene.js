@@ -90,10 +90,10 @@ var RunnerScene = (function(_super) {
         this.time.inited = this.time.now;
 
         // FullScreen
-        /*this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+        this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.refresh();
-        this.input.onDown.add(this.goFull, this);*/
+        this.input.onDown.add(this.goFull, this);
         
         this.add.sprite(this.scale.width - 630, 50, 'interface');
 
