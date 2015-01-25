@@ -24,7 +24,8 @@ var RunnerScene = (function(_super) {
         ];
 
         // Definicion de objetos
-        this.item = [Trunk, Volcan, Water];
+        this.item = [Trunk, Volcan, Water, Pincho];
+        this.itemSelector = ['Trunk', 'Volcan', 'Water', 'Pincho'];
 
         // Velocidad
         this.speed = Game.SPEED;
@@ -59,14 +60,27 @@ var RunnerScene = (function(_super) {
         this.stage.disableVisibilityChange = true;
         this.stage.disablePauseScreen = true;
 
+
         this.input.onDown.add(function() {
-            Game.socket.emit('receive addObject', 'Volcan');
+            this.randomItem = Math.floor((Math.random() * 4));
+            var itemId = this.itemSelector[this.randomItem];
+            Game.socket.emit('receive addObject', itemId);
+
+            console.log(" emit item=" + itemId + " this.randomItem=" + this.randomItem);
+
             /*
              if (this.time.now > Volcan.nextUse) {
-             this.addItem(new Volcan(this));
-             Volcan.nextUse = this.time.now + Volcan.DELAY * 1000;
-             }*/
+                 this.addItem(new Volcan(this));
+                 Volcan.nextUse = this.time.now + Volcan.DELAY * 1000;
+             }
+             if (this.time.now > Pincho.nextUse) {
+                 this.addItem(new Pincho(this));
+                 Pincho.nextUse = this.time.now + Pincho.DELAY * 1000;
+             }
+
+            */
         }, this);
+
     };
 
     /**
@@ -76,10 +90,10 @@ var RunnerScene = (function(_super) {
         this.time.inited = this.time.now;
 
         // FullScreen
-        this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+        /*this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.refresh();
-        this.input.onDown.add(this.goFull, this);
+        this.input.onDown.add(this.goFull, this);*/
         
         this.add.sprite(this.scale.width - 630, 50, 'interface');
 

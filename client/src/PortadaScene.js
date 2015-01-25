@@ -24,9 +24,11 @@ var PortadaScene = (function(_super) {
         // Carga el background
         this.load.image('portada', 'assets/interface/portada.png');
         this.load.image('creditos', 'assets/interface/creditos.png');
+        this.load.image('historia', 'assets/interface/historia.png');
         this.load.spritesheet('boton', 'assets/interface/botonesplay.png', 405, 251);
         this.load.spritesheet('botoncreditos', 'assets/interface/interfacecredits.png', 405, 251);
         this.load.spritesheet('botonback', 'assets/interface/botonback.png', 405, 251);
+        this.load.audio('loop', ['assets/menu.mp3', 'assets/menu.ogg']);
 
         //this.load.image('boton', 'assets/interface/boton.png');
 
@@ -59,17 +61,22 @@ var PortadaScene = (function(_super) {
 
         // Add background
         this.add.sprite(0, 0, 'portada');
+        this.scaleWidth = this.scale.width;
+        this.scaleHeight = this.scale.height;
+
         // Add button
-        var buttonplay = this.add.button(this.scale.width-700, this.scale.height-550, 'boton', this.playOnClick, this, 1, 0, 0);
+        var buttonplay = this.add.button(this.scaleWidth-700,this.scaleHeight-550, 'boton', this.playOnClick, this, 1, 0, 0);
         buttonplay.onInputOver.add(this.playOver, this);
         buttonplay.onInputOut.add(this.playOut, this);
         buttonplay.onInputUp.add(this.playUp, this);
 
-        var buttoncredits = this.add.button(this.scale.width-700, this.scale.height-300, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
+        var buttoncredits = this.add.button(this.scaleWidth-700, this.scaleHeight-300, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
         buttoncredits.onInputOver.add(this.creditsOver, this);
         buttoncredits.onInputOut.add(this.creditsOut, this);
         buttoncredits.onInputUp.add(this.creditsUp, this);
 
+        this.loopAudio = this.add.audio('loop', 0.6, true);
+        this.loopAudio.play();
 
     };
 
@@ -83,7 +90,9 @@ var PortadaScene = (function(_super) {
         console.log('button out');
     };
     PortadaScene.prototype.playOnClick = function() {
-        Game.enableSockets();
+        this.add.sprite(0, 0, 'historia');
+        setTimeout("Game.enableSockets()",7000);
+
     };
     PortadaScene.prototype.creditsUp = function() {
         console.log('button up', arguments);
@@ -115,12 +124,12 @@ var PortadaScene = (function(_super) {
 
         this.add.sprite(0, 0, 'portada');
         // Add button
-        var buttonplay = this.add.button(this.scale.width-700, this.scale.height-550, 'boton', this.playOnClick, this, 1, 0, 0);
+        var buttonplay = this.add.button(this.scaleWidth-700,this.scaleHeight-550, 'boton', this.playOnClick, this, 1, 0, 0);
         buttonplay.onInputOver.add(this.playOver, this);
         buttonplay.onInputOut.add(this.playOut, this);
         buttonplay.onInputUp.add(this.playUp, this);
 
-        var buttoncredits = this.add.button(this.scale.width-700, this.scale.height-300, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
+        var buttoncredits = this.add.button(this.scaleWidth-700, this.scaleHeight-300, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
         buttoncredits.onInputOver.add(this.creditsOver, this);
         buttoncredits.onInputOut.add(this.creditsOut, this);
         buttoncredits.onInputUp.add(this.creditsUp, this);
@@ -146,11 +155,11 @@ var PortadaScene = (function(_super) {
      * Se pone en pantalla completa
      */
     PortadaScene.prototype.goFull = function() {
-        /*if (this.scale.isFullScreen) {
+        if (this.scale.isFullScreen) {
          this.scale.stopFullScreen();
          } else {
          this.scale.startFullScreen(false);
-         }*/
+         }
     };
 
     return PortadaScene;
