@@ -61,7 +61,12 @@ var Volcan = (function(_super) {
         _super.prototype.onGameZone.call(this);
         this.music.play();
     };
-    
+
+    Volcan.prototype.isOverlap = function() {
+        return Volcan.OVERLAP;
+    };
+
+    Volcan.OVERLAP = false;
     Volcan.DELAY = 0;
     Volcan.nextUse = 0;
     Volcan.TYPE = 'volcan';
