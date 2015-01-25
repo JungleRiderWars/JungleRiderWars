@@ -14,6 +14,7 @@ var RunnerScene = (function(_super) {
         _super.call(this, difficulty);
         this.difficulty = difficulty;
 
+        Game.scene = this;
         // Establece los fondos del juego
         this.background = [
             {speed: 0.05, image: 'background_back'},
@@ -130,6 +131,29 @@ var RunnerScene = (function(_super) {
             this.game.debug.spriteCoords(this.runner.sprite, 32, 32);
             this.game.debug.body(this.exit);
             this.game.debug.body(this.limit);
+            
+            if (Game.player.type === 'jugador') {
+                this.add.text(this.world.centerX - 800, 80, 'Player', {
+                    font: "65px Arial",
+                    fill: "#ff0044",
+                    align: "center"
+                });
+            }
+            else if (Game.player.type === 'enemigo') {
+                this.add.text(this.world.centerX - 800, 80, 'Enemy', {
+                    font: "65px Arial",
+                    fill: "#ff0044",
+                    align: "center"
+                });
+            }
+            else {
+                this.add.text(this.world.centerX - 800, 80, 'Observer', {
+                    font: "65px Arial",
+                    fill: "#ff0044",
+                    align: "center"
+                });
+                this.runner.sprite.reset(Game.player.resetx, Game.player.resety);
+            }
 
             for (var i in this.itemsInScene) {
                 this.game.debug.body(this.itemsInScene[i].sprite);

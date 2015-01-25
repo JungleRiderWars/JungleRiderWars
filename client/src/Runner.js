@@ -33,6 +33,7 @@ var Runner = (function(_super) {
         this.scene.physics.enable(this.sprite, Phaser.Physics.ARCADE);
         this.sprite.body.setSize(65, 220, 120, 50);
         this.sprite.body.collideWorldBounds = true;
+
         this.addAnimations();
 
         // Keyboard
@@ -40,15 +41,15 @@ var Runner = (function(_super) {
         this.controls = this.scene.input.keyboard.createCursorKeys();
         this.controls.space = this.scene.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         this.controls.ctrl = this.scene.input.keyboard.addKey(Phaser.Keyboard.CONTROL);
-        
+
         // Audio
-        this.audioJump = this.scene.add .audio('jump', 1, false);
+        this.audioJump = this.scene.add.audio('jump', 1, false);
         this.audioJumpFall = this.scene.add.audio('jumpFall', 1, false);
-        this.audioWalk1 = this.scene.add.audio('walk1', 0.3, false);
-        this.audioWalk2 = this.scene.add.audio('walk2', 0.3, false);
+        this.audioWalk1 = this.scene.add.audio('walk1', 0.2, false);
+        this.audioWalk2 = this.scene.add.audio('walk2', 0.2, false);
         this.audioWaterWalk1 = this.scene.add.audio('walkWater1', 1, false);
         this.audioWaterWalk2 = this.scene.add.audio('walkWater2', 1, false);
-        
+
     };
     /**
      * Añade las animaciones a la escena
@@ -66,48 +67,58 @@ var Runner = (function(_super) {
      * @param number velocity
      */
     Runner.prototype.update = function() {
+        if (typeof Game.player !== "undefined" && typeof Game.player.resetx !== "undefined"
+                && Game.player.type !== 'jugador' && Game.player.resetx !== null) {
+            this.sprite.reset(Game.player.resetx, Game.player.resety);
+            Game.player.resetx = null;
+        }
 
+        if (Game.player.type === 'jugador' && (this.controls.left.isDown
+                || this.controls.right.isDown || this.controls.space.isDown || this.controls.ctrl.isDown)) {
+            Game.socket.emit('mySight', this.controls.left.isDown, this.controls.right.isDown, this.controls.space.isDown, this.controls.ctrl.isDown, this.sprite.x, this.sprite.y);
+        }
         this.scene.speed = Game.SPEED + this.velocity * 5;
 
-        if ( this.controls.ctrl.isDown ){
+        if (this.controls.ctrl.isDown) {
             this.velocity = 2;
         }
-        else if( (this.controls.left.isDown && this.controls.right.isDown) || 
-                (!this.controls.left.isDown && !this.controls.right.isDown) ){
+        else if ((this.controls.left.isDown && this.controls.right.isDown) ||
+                (!this.controls.left.isDown && !this.controls.right.isDown)) {
             this.velocity = 0;
         }
-        else if( this.controls.left.isDown ){
+        else if (this.controls.left.isDown) {
             this.velocity = -2;
         }
-        else this.velocity = 2;
+        else {
+            this.velocity = 2;
+        }
 
-        if( this.onFloor() && this.jumping ){
+        if (this.onFloor() && this.jumping) {
             this.audioJumpFall.play();
             this.jumping = false;
         }
-        
-        if ( this.controls.ctrl.isDown ) {
+
+        if (this.controls.ctrl.isDown) {
             this.sprite.animations.play('rolling');
-            
         }
-        else if( !this.onFloor() ){
+        else if (!this.onFloor()) {
             this.sprite.loadTexture('runner', 9);
         }
-        
-        else if ( this.controls.space.isDown ) {
-            if( !this.audioJump.isPlaying ){
+
+        else if (this.controls.space.isDown) {
+            if (!this.audioJump.isPlaying) {
                 this.audioJump.play();
             }
-            
+
             this.sprite.loadTexture('runner', 9);
             this.sprite.body.velocity.y = -1000;
             this.jumping = true;
         }
 
-        else if (this.sprite.body.touching.down && this.velocity === 0 )
+        else if (this.sprite.body.touching.down && this.velocity === 0)
             this.sprite.loadTexture('runner', 0);
 
-        else if (this.velocity < 0 && !this.sprite.body.touching.left )
+        else if (this.velocity < 0 && !this.sprite.body.touching.left)
             this.sprite.animations.play('walk');
 
         else if (this.velocity > 0 && !this.sprite.body.touching.right)
@@ -115,26 +126,27 @@ var Runner = (function(_super) {
 
         else
             this.sprite.animations.play('sprint');
-        
-        if( this.onFloor() && this.scene.time.now > this.walkingTime ){
-            if( this.walk !== 1 ){
-                if( this.inWater )
+
+        if (this.onFloor() && this.scene.time.now > this.walkingTime) {
+            if (this.walk !== 1) {
+                if (this.inWater)
                     this.audioWaterWalk1.play();
-                else this.audioWalk1.play();
+                else
+                    this.audioWalk1.play();
                 this.walk = 1;
             }
             else {
-                if( this.inWater )
+                if (this.inWater)
                     this.audioWaterWalk2.play();
-                else this.audioWalk2.play();
+                else
+                    this.audioWalk2.play();
                 this.walk = 2;
             }
-            
-            this.walkingTime = this.scene.time.now + (-this.velocity+3)*100;
-        }
-        
-        this.sprite.body.velocity.x = this.velocity * 100;
 
+            this.walkingTime = this.scene.time.now + (-this.velocity + 3) * 100;
+        }
+
+        this.sprite.body.velocity.x = this.velocity * 100;
     };
 
     /**
@@ -144,14 +156,43 @@ var Runner = (function(_super) {
     Runner.prototype.gameOver = function() {
         console.log('Game Over');
     };
-    
+
     /**
      * Comprueba si está en el suelo
      * @return bool
      */
-    Runner.prototype.onFloor = function(){
+    Runner.prototype.onFloor = function() {
         return this.sprite.body.touching.down || this.sprite.body.onFloor();
     };
-    
+
+    /**
+     * Recibe datos desde el servidor
+     * @param bool jump
+     * @param bool rolling
+     * @param int x
+     * @param int y
+     * @param int velocity
+     */
+    Runner.prototype.onReceived = function(left, right, space, ctrl, x, y) {
+        this.controls = {
+            left: {
+                isDown: left
+            },
+            right: {
+                isDown: right
+            },
+            space: {
+                isDown: space
+            },
+            ctrl: {
+                isDown: ctrl
+            }
+        };
+        this.controls.right.isDown = true;
+        this.rolling = rolling;
+        this.sprite.reset(x, y);
+        this.velocity = velocity;
+    };
+
     return Runner;
 })(Player);
