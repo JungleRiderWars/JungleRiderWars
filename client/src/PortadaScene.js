@@ -59,13 +59,16 @@ var PortadaScene = (function(_super) {
 
         // Add background
         this.add.sprite(0, 0, 'portada');
+        this.scaleWidth = this.scale.width;
+        this.scaleHeight = this.scale.height;
+
         // Add button
-        var buttonplay = this.add.button(this.scale.width-700, this.scale.height-550, 'boton', this.playOnClick, this, 1, 0, 0);
+        var buttonplay = this.add.button(this.scaleWidth-700,this.scaleHeight-550, 'boton', this.playOnClick, this, 1, 0, 0);
         buttonplay.onInputOver.add(this.playOver, this);
         buttonplay.onInputOut.add(this.playOut, this);
         buttonplay.onInputUp.add(this.playUp, this);
 
-        var buttoncredits = this.add.button(this.scale.width-700, this.scale.height-300, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
+        var buttoncredits = this.add.button(this.scaleWidth-700, this.scaleHeight-300, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
         buttoncredits.onInputOver.add(this.creditsOver, this);
         buttoncredits.onInputOut.add(this.creditsOut, this);
         buttoncredits.onInputUp.add(this.creditsUp, this);
@@ -115,12 +118,12 @@ var PortadaScene = (function(_super) {
 
         this.add.sprite(0, 0, 'portada');
         // Add button
-        var buttonplay = this.add.button(this.scale.width-700, this.scale.height-550, 'boton', this.playOnClick, this, 1, 0, 0);
+        var buttonplay = this.add.button(this.scaleWidth-700,this.scaleHeight-550, 'boton', this.playOnClick, this, 1, 0, 0);
         buttonplay.onInputOver.add(this.playOver, this);
         buttonplay.onInputOut.add(this.playOut, this);
         buttonplay.onInputUp.add(this.playUp, this);
 
-        var buttoncredits = this.add.button(this.scale.width-700, this.scale.height-300, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
+        var buttoncredits = this.add.button(this.scaleWidth-700, this.scaleHeight-300, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
         buttoncredits.onInputOver.add(this.creditsOver, this);
         buttoncredits.onInputOut.add(this.creditsOut, this);
         buttoncredits.onInputUp.add(this.creditsUp, this);
