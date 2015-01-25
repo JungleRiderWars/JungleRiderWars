@@ -28,6 +28,7 @@ var PortadaScene = (function(_super) {
         this.load.spritesheet('boton', 'assets/interface/botonesplay.png', 405, 251);
         this.load.spritesheet('botoncreditos', 'assets/interface/interfacecredits.png', 405, 251);
         this.load.spritesheet('botonback', 'assets/interface/botonback.png', 405, 251);
+        this.load.audio('loop', ['assets/menu.mp3', 'assets/menu.ogg']);
 
         //this.load.image('boton', 'assets/interface/boton.png');
 
@@ -74,6 +75,8 @@ var PortadaScene = (function(_super) {
         buttoncredits.onInputOut.add(this.creditsOut, this);
         buttoncredits.onInputUp.add(this.creditsUp, this);
 
+        this.loopAudio = this.add.audio('loop', 0.6, true);
+        this.loopAudio.play();
 
     };
 

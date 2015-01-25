@@ -81,8 +81,6 @@ io.sockets.on('connection', function(socket){
 
         //io.sockets.emit('sight', socket.player, left, right, jump, duck, fire);
 
-
-
         // Jugador es el primero que entra
         if(jugador == 0) {
             jugador = socket.id;
