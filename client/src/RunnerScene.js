@@ -177,11 +177,11 @@ var RunnerScene = (function(_super) {
      * Se pone en pantalla completa
      */
     RunnerScene.prototype.goFull = function() {
-        /*if (this.scale.isFullScreen) {
+        if (this.scale.isFullScreen) {
          this.scale.stopFullScreen();
          } else {
          this.scale.startFullScreen(false);
-         }*/
+         }
     };
 
     return RunnerScene;

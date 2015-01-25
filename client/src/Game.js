@@ -47,7 +47,6 @@ var Game = {
         this.socket = null;
         this.player = {};
 
-        //this.enableSockets();
         this.addScenes();
         Game.phaser.state.start('PortadaScene'); // Por ahora forzamos la escena
 
@@ -78,6 +77,7 @@ var Game = {
             Game.player.resetx = playerx;
             Game.player.resety = playery;
             Game.phaser.state.start('RunnerScene'); // Por ahora forzamos la escena
+
             
         });
         

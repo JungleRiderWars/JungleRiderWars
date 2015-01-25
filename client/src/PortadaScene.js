@@ -24,6 +24,7 @@ var PortadaScene = (function(_super) {
         // Carga el background
         this.load.image('portada', 'assets/interface/portada.png');
         this.load.spritesheet('boton', 'assets/interface/botonesplay.png', 405, 251);
+        this.load.spritesheet('botoncreditos', 'assets/interface/interfacecredits.png', 405, 251);
         //this.load.image('boton', 'assets/interface/boton.png');
 
         // Pre carga objetos (botones)
@@ -56,28 +57,43 @@ var PortadaScene = (function(_super) {
         // Add background
         this.add.sprite(0, 0, 'portada');
         // Add button
-        var button = this.add.button(this.scale.width-800, this.scale.height-500, 'boton', this.actionOnClick, this, 1, 0, 0);
-        button.onInputOver.add(this.buttonOver, this);
-        button.onInputOut.add(this.buttonOut, this);
-        button.onInputUp.add(this.buttonUp, this);
+        var buttonplay = this.add.button(this.scale.width-800, this.scale.height-500, 'boton', this.playOnClick, this, 1, 0, 0);
+        buttonplay.onInputOver.add(this.playOver, this);
+        buttonplay.onInputOut.add(this.playOut, this);
+        buttonplay.onInputUp.add(this.playUp, this);
+
+        var buttoncredits = this.add.button(this.scale.width-800, this.scale.height-500, 'botoncreditos', this.creditsOnClick, this, 1, 0, 0);
+        buttoncredits.onInputOver.add(this.creditsOver, this);
+        buttoncredits.onInputOut.add(this.creditsOut, this);
+        buttoncredits.onInputUp.add(this.creditsUp, this);
 
     };
 
-    PortadaScene.prototype.buttonUp = function() {
+    PortadaScene.prototype.playUp = function() {
         console.log('button up', arguments);
     };
-    PortadaScene.prototype.buttonOver = function() {
+    PortadaScene.prototype.playOver = function() {
         console.log('button over');
     };
-    PortadaScene.prototype.buttonOut = function() {
+    PortadaScene.prototype.playOut = function() {
         console.log('button out');
     };
-    PortadaScene.prototype.actionOnClick = function() {
+    PortadaScene.prototype.playOnClick = function() {
+        Game.enableSockets();
+    };
+    PortadaScene.prototype.creditsUp = function() {
+        console.log('button up', arguments);
+    };
+    PortadaScene.prototype.creditsOver = function() {
+        console.log('button over');
+    };
+    PortadaScene.prototype.creditsOut = function() {
         console.log('button out');
     };
-    function actionOnClick () {
-        console.log('button out');
-    }
+    PortadaScene.prototype.creditsOnClick = function() {
+        Game.enableSockets();
+    };
+
 
     /**
      * Se ejecuta en cada frame
