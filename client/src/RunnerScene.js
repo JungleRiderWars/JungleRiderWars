@@ -38,7 +38,9 @@ var RunnerScene = (function(_super) {
 
         this.load.audio('background', ['assets/background.mp3', 'assets/background.ogg']);
         this.load.audio('loop', ['assets/loop.mp3', 'assets/loop.ogg']);
+        this.load.audio('gritos', ['assets/GRITOS.mp3', 'assets/GRITOS.ogg']);
         this.load.image('interface', 'assets/interface/background.png');
+        this.load.image('gameover', 'assets/interface/fail.png');
         
         // Carga los background
         for (var i in this.background) {
@@ -114,7 +116,7 @@ var RunnerScene = (function(_super) {
 
         this.backgroundAudio = this.add.audio('background', 0.6, false);
         this.loopAudio = this.add.audio('loop', 0.6, true);
-
+        this.gritos = this.add.audio('gritos', 1.5, false);
 
     };
     /**
@@ -156,7 +158,7 @@ var RunnerScene = (function(_super) {
      * Renderiza
      */
     RunnerScene.prototype.render = function() {
-
+        
         if (Game.DEBUG) {
             this.game.debug.body(this.runner.sprite);
             this.game.debug.spriteCoords(this.runner.sprite, 32, 32);

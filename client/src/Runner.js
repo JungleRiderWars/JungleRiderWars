@@ -24,6 +24,7 @@ var Runner = (function(_super) {
         this.walkingTime = 1;
         this.inWater = 0;
         this.score = 0;
+        this.isGameOver = false;
     }
 
     /**
@@ -74,7 +75,7 @@ var Runner = (function(_super) {
             Game.player.resetx = null;
         }
 
-        if (Game.player.type === 'jugador' ) {
+        if (Game.player.type === 'jugador') {
             Game.socket.emit('mySight', this.controls.left.isDown, this.controls.right.isDown, this.controls.space.isDown, this.controls.ctrl.isDown, this.sprite.x, this.sprite.y);
         }
         this.scene.speed = Game.SPEED + this.velocity * 5;
@@ -162,7 +163,14 @@ var Runner = (function(_super) {
      * @todo
      */
     Runner.prototype.gameOver = function() {
-        console.log('Game Over');
+        if (!this.isGameOver) {
+            this.isGameOver = true;
+            this.scene.add.sprite(0, 0, 'gameover');
+            this.scene.backgroundAudio.stop();
+            this.scene.loopAudio.stop();
+            this.scene.gritos.play();
+        }
+
     };
 
     /**
@@ -177,11 +185,11 @@ var Runner = (function(_super) {
      * Setea si el corredor está en el agua
      * @param bool inWater
      */
-    Runner.prototype.setInWater = function(inWater){
+    Runner.prototype.setInWater = function(inWater) {
         this.inWater = inWater;
     };
 
-     /**
+    /**
      * Recibe datos desde el servidor
      * @param bool jump
      * @param bool rolling
