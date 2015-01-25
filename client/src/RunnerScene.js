@@ -16,14 +16,14 @@ var RunnerScene = (function(_super) {
 
         // Establece los fondos del juego
         this.background = [
-            {speed: 0.1, image: 'background_back'},
-            {speed: 0.3, image: 'background_mid'},
-            {speed: 0.5, image: 'background_front'},
-            {speed: 0.7, image: 'ground' }
+            {speed: 0.05, image: 'background_back'},
+            {speed: 0.07, image: 'background_mid'},
+            {speed: 0.09, image: 'background_front'},
+            {speed: 0.1, image: 'ground'}
         ];
 
         // Definicion de objetos
-        this.item = ['trunk'];
+        this.item = [Trunk, Volcan];
 
         // Velocidad
         this.speed = Game.SPEED;
@@ -42,7 +42,10 @@ var RunnerScene = (function(_super) {
 
         // Pre carga objetos
         for (var i in this.item) {
-            this.load.spritesheet(this.item[i], 'assets/item/' + this.item[i] + '.png', 50, 100);
+            this.load.spritesheet(this.item[i].TYPE, 'assets/item/' + this.item[i].TYPE + '.png', this.item[i].WIDTH, this.item[i].HEIGHT);
+            for (var j in this.item[i].AUDIO_FILES) {
+                this.load.audio(this.item[i].AUDIO_FILES[j], ['assets/item/' + this.item[i].AUDIO_FILES[j] + '.mp3', '/assets/item/' + this.item[i].AUDIO_FILES[j] + '.ogg']);
+            }
         }
 
         // Works without focus
@@ -61,14 +64,16 @@ var RunnerScene = (function(_super) {
      * Crea la escena
      */
     RunnerScene.prototype.create = function() {
+        this.time.inited = this.time.now;
+
         // FullScreen
         this.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.scale.refresh();
-        this.input.onDown.add(this.goFull, this); 
+        this.input.onDown.add(this.goFull, this);
 
         // Set limits and gravity
-        this.world.setBounds(-50, 0, this.scale.width + 50, this.scale.height - 180);
+        this.world.setBounds(-500, 0, this.scale.width + 500, this.scale.height - Game.INITIAL_HEIGHT + 30);
         this.physics.startSystem(Phaser.Physics.ARCADE);
         this.physics.arcade.gravity.y = 980 * Game.GRAVITY;
 
@@ -78,14 +83,14 @@ var RunnerScene = (function(_super) {
         }
 
         // Exit collider
-        this.exit = this.add.sprite(-50, Game.INITIAL_HEIGHT);
+        this.exit = this.add.sprite(-150, Game.INITIAL_HEIGHT);
         this.physics.enable(this.exit, Phaser.Physics.ARCADE);
         this.exit.body.setSize(50, this.scale.height, 0, 0);
         this.exit.body.collideWorldBounds = true;
         this.exit.body.immovable = true;
 
         // Runner limit
-        this.limit = this.add.sprite( this.scale.width - Game.SIZE.enemy, Game.INITIAL_HEIGHT);
+        this.limit = this.add.sprite(this.scale.width - Game.SIZE.enemy, Game.INITIAL_HEIGHT);
         this.physics.enable(this.limit, Phaser.Physics.ARCADE);
         this.limit.body.setSize(2, this.scale.height, 0, 0);
         this.limit.body.collideWorldBounds = true;
@@ -98,20 +103,20 @@ var RunnerScene = (function(_super) {
      */
     RunnerScene.prototype.update = function() {
 
-        this.runner.update();
-
         // Por cada elemento de la lista
         for (var i in this.itemsInScene) {
             this.itemsInScene[i].update();
         }
 
-        this.physics.arcade.collide(this.runner.sprite, this.exit, this.runner.gameOver, null, this.runner);
-        this.physics.arcade.collide(this.runner.sprite, this.limit, function(){}, null, this.runner);
+        this.physics.arcade.overlap(this.runner.sprite, this.exit, this.runner.gameOver, null, this.runner);
+        this.physics.arcade.collide(this.runner.sprite, this.limit);
 
         // Mueve los fondos
         for (var i in this.background) {
             this.background[i].sprite.tilePosition.x -= this.speed * this.background[i].speed;
         }
+
+        this.runner.update();
 
     };
 
@@ -139,18 +144,18 @@ var RunnerScene = (function(_super) {
      * @param Item item
      */
     RunnerScene.prototype.addItem = function(item) {
-        this.itemsInScene.push(item);
+        item.index = this.itemsInScene.push(item) - 1;
     };
 
     /**
      * Se pone en pantalla completa
      */
     RunnerScene.prototype.goFull = function() {
-        if (this.scale.isFullScreen) {
-            this.scale.stopFullScreen();
-        } else {
-            this.scale.startFullScreen(false);
-        }
+        /*if (this.scale.isFullScreen) {
+         this.scale.stopFullScreen();
+         } else {
+         this.scale.startFullScreen(false);
+         }*/
     };
 
     return RunnerScene;

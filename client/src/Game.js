@@ -20,11 +20,11 @@ var Game = {
     /**
      * Velocidad por defecto
      */
-    SPEED: 10,
+    SPEED: 50,
     /**
      * Tamaño del juego y de los cuadrados
      */
-    SIZE: {width: 1920, height: 1080, square: 50, enemy: 600},
+    SIZE: {width: 1920, height: 1080, enemy: 600},
     /**
      * Gravedad
      * @vars number
@@ -39,14 +39,9 @@ var Game = {
      */
     init: function() {
         this.phaser = new Phaser.Game(this.SIZE.width, this.SIZE.height, Phaser.AUTO);
-        //this.phaser.scale.startFullScreen(true); // FIXME: Activar fullscreen
 
         this.addScenes();
         this.phaser.state.start('RunnerScene'); // Por ahora forzamos la escena
-
-        window.addEventListener('resize', function() {
-            Game.onResize();
-        });
     },
     /**
      * Añade las escenas
